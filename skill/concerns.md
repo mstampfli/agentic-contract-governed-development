@@ -18,3 +18,4 @@ Each entry: what goes wrong, and where it was observed. Add a row whenever a lat
 | C12 | Compatibility | On-disk / wire format versions, upgrades | — (not yet observed) |
 | C13 | Trust boundary | Untrusted input from the network or files: sizes, paths, names; for browsers: origin (CORS/CSRF) and output escaping | tinyq topic names ".", ".." |
 | C14 | Derived data & caches | Who updates or invalidates a cache / index / derived copy when its source changes; how stale may a reader see it? | — (found by the new-agent simulation) |
+| C15 | Shared memory across processes / copies | Which ranges stay shared (MAP_SHARED, SysV shm, memfd) between processes or copies of one — can a write through one side reach the other; is a "copy" really independent? | pgit V0 review (fork keeps MAP_SHARED shared) |
