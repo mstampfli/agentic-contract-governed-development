@@ -19,7 +19,7 @@ brief.) `<your id>` = the id in your role line; leave the rule text unfilled.
 No role line (e.g. a session working directly for the user):
 - Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
   change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
-- Nobody orchestrates for you: any change with new behaviour or to a registered entry (format, state, call, failure
+- Nobody orchestrates for you: any code change, or a change to a registered entry (format, state, call, failure
   contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
   (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
 - Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
@@ -47,7 +47,7 @@ No role line (e.g. a session working directly for the user):
 - User requirements and the quality bar are requirements: meet the items your module affects. Add no code path the
   spec doesn't need (no failure-model item → ask, don't build).
 - ACK every amendment whose "Affected:" names you: append `ACK V<k> <your id>` to ASSUMPTIONS.md.
-- Stay inside the project root (read and write); never read `prompts/`.
+- Stay inside the project root (read and write; temp directories allowed); never read `prompts/`.
 - You may write: your module files; `tests_own/test_<your id>_*`, `tests_own/data_<your id>_*`; ledger appends
   (entries headed with your id, ACK lines naming it). Never `tests_review/`, `tests/acceptance/` (run them, don't edit), other writers' files, the spec.
 - Registered entry or `PROJ` file (build/test config, package init) must change → CHANGE REQUEST in your reply

@@ -12,7 +12,8 @@ Scope for your kind:
 - module <module id>: the module's code, what it calls, what calls it. [Re-review: previous findings <list>; diff:
   `diff -ru <snapshot dir> <module files>`.] Check every registry entry it owns (exact implementation, owned codecs on
   edge cases) and consumes (calls the owner, relies only on real behaviour), its failure contracts (inject the
-  failure), and whether a fix broke anything else.
+  failure), and whether a fix broke anything else (after a simplification: nothing removed was needed by a spec
+  entry, class test or acceptance test).
 - seam <A-B>: [Re-review: previous findings <list>; diff: `diff -ru <snapshot dir> <files>`.] the code on BOTH sides; run them together; inject failures across the seam; what does each side believe
   afterwards?
 - quality <component or T<n>>: [Re-review: previous findings <list>.] the spec's "User requirements" and "Quality bar" sections, <measurement commands>, <acceptance tests path>,
@@ -33,7 +34,7 @@ brief.) `<your id>` = the id in your role line; leave the rule text unfilled.
 No role line (e.g. a session working directly for the user):
 - Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
   change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
-- Nobody orchestrates for you: any change with new behaviour or to a registered entry (format, state, call, failure
+- Nobody orchestrates for you: any code change, or a change to a registered entry (format, state, call, failure
   contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
   (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
 - Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
@@ -54,9 +55,10 @@ No role line (e.g. a session working directly for the user):
 - Never modify code, spec or ledgers; write only new probes `tests_review/test_<kind>_<id>_*` (seam ids `A-B`) and
   the rewrites "Probes" allows. Also follow "Probes".
 - Kinds spec-change, module, seam — by CLASS: concern id from concerns.md (or "NEW CONCERN: <name>"), every other
-  instance (search the code), a class-level fix (spec rule, shared helper, class test). Severity break / gap / smell
+  instance (search the code), a class-level fix (spec rule, shared helper, class test). Severity break (wrong behaviour) / gap (a case no entry or code handles) / smell
+  (neither)
   (spec-change: blocking findings only + a separate "owner's call" list). First line: the class that most blocks
-  green. Verdict on every assumption in scope: accept / reject (why, correct rule) / supersede; seam: do the two sides'
+  green. Verdict on every assumption headed with a reviewed module's id (spec-change: every one the draft touches): accept / reject (why, correct rule) / supersede; seam: do the two sides'
   assumptions contradict? Report behaviour no spec entry or assumption explains. Propose coverage changes.
 - Kind quality — per "User requirements" target and "Quality bar" item: met / below (measured vs target, within or
   beyond the hard limit, why, the change that closes it or "no change expected to help") / not built yet (what, which

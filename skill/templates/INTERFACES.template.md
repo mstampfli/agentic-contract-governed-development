@@ -1,7 +1,7 @@
 # INTERFACES — <system>   (version <k> = number of the latest "## V<k>" section; 0 before any)
 
 <!-- Id conventions (used by spec_check.py):
-  FMT-n formats, EFF-n state items, CALL-n cross-module calls, HLP-n shared helpers/constants/conventions, R4 rows named by their call (first cell `<call>`),
+  FMT-n formats, EFF-n state items, CALL-n cross-module calls, HLP-n shared helpers/constants/conventions, REQ-n user requirements, R4 rows named by their call (first cell `<call>`),
   amendment sections "## V<k> <title>" with items V<k>-<n>, ledger entries ASSUMPTION-<writer id>-<n>.
   A mark goes on the DEFINING line of the amended entry (its heading, bold bullet or table row): "(amended by V4-2)". -->
 
@@ -12,7 +12,7 @@ brief.) `<your id>` = the id in your role line; leave the rule text unfilled.
 No role line (e.g. a session working directly for the user):
 - Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
   change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
-- Nobody orchestrates for you: any change with new behaviour or to a registered entry (format, state, call, failure
+- Nobody orchestrates for you: any code change, or a change to a registered entry (format, state, call, failure
   contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
   (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
 - Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
@@ -40,7 +40,7 @@ No role line (e.g. a session working directly for the user):
 - User requirements and the quality bar are requirements: meet the items your module affects. Add no code path the
   spec doesn't need (no failure-model item → ask, don't build).
 - ACK every amendment whose "Affected:" names you: append `ACK V<k> <your id>` to ASSUMPTIONS.md.
-- Stay inside the project root (read and write); never read `prompts/`.
+- Stay inside the project root (read and write; temp directories allowed); never read `prompts/`.
 - You may write: your module files; `tests_own/test_<your id>_*`, `tests_own/data_<your id>_*`; ledger appends
   (entries headed with your id, ACK lines naming it). Never `tests_review/`, `tests/acceptance/` (run them, don't edit), other writers' files, the spec.
 - Registered entry or `PROJ` file (build/test config, package init) must change → CHANGE REQUEST in your reply
@@ -59,9 +59,10 @@ No role line (e.g. a session working directly for the user):
 - Never modify code, spec or ledgers; write only new probes `tests_review/test_<kind>_<id>_*` (seam ids `A-B`) and
   the rewrites "Probes" allows. Also follow "Probes".
 - Kinds spec-change, module, seam — by CLASS: concern id from concerns.md (or "NEW CONCERN: <name>"), every other
-  instance (search the code), a class-level fix (spec rule, shared helper, class test). Severity break / gap / smell
+  instance (search the code), a class-level fix (spec rule, shared helper, class test). Severity break (wrong behaviour) / gap (a case no entry or code handles) / smell
+  (neither)
   (spec-change: blocking findings only + a separate "owner's call" list). First line: the class that most blocks
-  green. Verdict on every assumption in scope: accept / reject (why, correct rule) / supersede; seam: do the two sides'
+  green. Verdict on every assumption headed with a reviewed module's id (spec-change: every one the draft touches): accept / reject (why, correct rule) / supersede; seam: do the two sides'
   assumptions contradict? Report behaviour no spec entry or assumption explains. Propose coverage changes.
 - Kind quality — per "User requirements" target and "Quality bar" item: met / below (measured vs target, within or
   beyond the hard limit, why, the change that closes it or "no change expected to help") / not built yet (what, which
@@ -132,7 +133,7 @@ No role line (e.g. a session working directly for the user):
 | Several processes on the same state | | |
 | <other: clock skew, disk full, slow peer, ...> | | |
 
-## User requirements (verbatim — every feature, requirement and target the user stated; correctness ones get acceptance tests, performance/quality targets are quality-bar items)
+## User requirements (verbatim — every feature, requirement and target the user stated; correctness ones and stated features get acceptance tests, performance/quality targets are quality-bar items)
 - **REQ-1** "<quote>" (<date / message it came from>)
 
 ## Scope map
@@ -147,7 +148,7 @@ Red-team targets (runnable composites of green components):
 
 ## Quality bar (the user's performance/quality targets + orchestrator-set items for areas the user left open — those are an ask-point; "none beyond green" is a valid decision)
 Default stance: <beat | match | differ | criterion> (items may override)
-| Item | Kind (measured / judged) | How (workload or scenario in words — scripts stay hidden) | Stance (judged) | Target (vs reference) | Hard limit (measured: default 3× worse; "≥ X" target → X/3; judged: fallback stance (default: beat → match; others none = any shortfall is a reported miss); a user's "must": the stance itself) |
+| Item | Kind (measured / judged) | How (workload or scenario in words — scripts stay hidden) | Stance (judged) | Target (vs reference; differ: identity axes + floor axes) | Hard limit (measured: default 3× worse; "≥ X" target → X/3; judged: fallback stance (default: beat → match; others none = any shortfall is a reported miss); a user's "must": the stance itself) |
 |---|---|---|---|---|---|
 
 ## Modules (identity → files)
@@ -188,7 +189,7 @@ Default stance: <beat | match | differ | criterion> (items may override)
      every amendment V<k> raises the version to k. Format:
 ## V<k> <title>
 Adds: <new entries, module rows, coverage columns — defined in place in their sections, marked "(added by V<k>)">.
-Touches: <existing FMT-n, EFF-n, CALL-n, HLP-n, V<j>-<n>, R4[<call>] …, each marked in place>. Affected: <writer ids, or "none">.
+Touches: <existing FMT-n, EFF-n, CALL-n, HLP-n, REQ-n, V<j>-<n>, R4[<call>] …, each marked in place>. Affected: <writer ids, or "none">.
 - **V<k>-1** <rule>
 -->
 

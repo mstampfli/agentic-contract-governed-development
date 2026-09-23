@@ -42,7 +42,7 @@ case → tiers, batching, "question scope").
     `STATUS.md`, `PROCESS.md`, `concerns.md`, `AGENTS.md`/`CLAUDE.md`, `prompts/`, `snapshots/`, `tests_review/`, `tests/acceptance/`) and
     `tests_own/` (belongs to the writer whose id the file carries).
   * `PROJ` row (always present): build config, package `__init__`, test-runner config (collects `tests_own/`,
-    `tests_review/`; `test_` = pytest default, set the pattern for other runners). Written by the orchestrator; writers
+    `tests_review/`, `tests/acceptance/`; `test_` = pytest default, set the pattern for other runners). Written by the orchestrator; writers
     send CHANGE REQUESTs; no amendment needed; not a component (no reviews, no green state). Orchestrator's questions: `Q-PROJ-<n>`.
 * **Component**: module(s) that become green together (default one; group tiny or co-changing modules — scope map).
 * **Roles**: orchestrator (you); writer / fixer (**fresh builder** = new writer agent: finding + spec + code, no
@@ -85,7 +85,8 @@ case → tiers, batching, "question scope").
   add-ons start hidden again.
   Run once every component they exercise is green, and at every later checkpoint. External services: tested against
   fakes; a feature on one is done when it passes against fakes; a real-service check is a decision. The
-  orchestrator's fakes live in the work directory; writers build their own in `tests_own/`; the protocol a fake
+  orchestrator's fakes live in the work directory; writers build their own as `tests_own/test_<id>_*` /
+  `tests_own/data_<id>_*`; the protocol a fake
   imitates is registered (FMT).
 * **Quality bar** (spec section): the user's performance/quality targets + orchestrator-set targets for areas where
   the user named none (ask-point).
@@ -210,14 +211,14 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
      `snapshots/`, PROJ test config, `AGENTS.md` (`<project>`, `<skill dir>` filled, absolute) + `CLAUDE.md`
      symlink (now, so counter-specifiers can't read it);
    * **merge** into `INTERFACES.proposed.md`; the all / some / one list goes in the changelog. All → keep.
-     Disagreement → decide, reason in the changelog (product decision → ask-point; technical → yours). Only one →
+     Disagreement → decide, reason in the changelog (product decision → ask-point; technical → yours). Some or only one →
      adopt, or `out: <reason>` in coverage ("not adopted: <reason>" in the changelog if not a cell). Open questions
      → QUESTIONS.md or decide;
    * quote the **user requirements** (`REQ-n`);
    * **operational traces**: install, first start, restart while running, upgrade, overload, disk full, misuse;
    * **1–2 reference systems** (yourself or researchers, `researcher_brief.md`): what they handle and the draft doesn't
      = gap candidate (e.g. a data-dir lock);
-   * **acceptance tests** for correctness requirements and stated features;
+   * **acceptance tests** for correctness requirements and stated features in scope now (planned ones: at their add-on);
    * **quality bar**: the user's targets + for each stated feature / component without a user target 2–3 candidates, each named, obtainable
      and comparable (e.g. a reference system's benchmark) — an ask-point; script measured items;
    * **run the reference system** where it runs locally (install in the work directory or a virtualenv): same
@@ -280,7 +281,7 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 `snapshots/<component>-<id>-r<N>/` (skip if no code yet); `touch <work dir>/stamp_<id>_r<N>`.
 
 **After every writer run**, in order:
-1. Its tests with its reported command ("0 tests ran" = red flag), every class test, every saved probe (each file,
+1. Its tests with its reported command ("0 tests ran" = red flag), every class test, `tests/acceptance/`, every saved probe (each file,
    `timeout 120`; a strict-xfail probe of a just-fixed finding fails by design → next reviewer rewrites it).
 2. `verify_citations.py <root>`; stale citation after an owner's change: code / `tests_own/` → its writer;
    `tests_review/` → you.
@@ -325,8 +326,8 @@ ledgers, `PROCESS.md`, `STATUS.md`, `concerns.md` copy, work directory, `prompts
    module's id.
 5. Code, owner first; tests: contract test per consumer that can't import the owner's codec, failure-injection test
    per new R4 row, class test per fixed class.
-6. Orchestrator duties checklist; fresh module review per changed module with new behaviour (comment-only →
-   mechanical), seam review per changed seam.
+6. Orchestrator duties checklist; fresh module review per semantically changed module (a simplification counts;
+   comment-only → mechanical), seam review per changed seam.
 7. Feature whole → red-team round + quality review (if the project has a bar). `STATUS.md` as in Mode 1.
 
 ## Files

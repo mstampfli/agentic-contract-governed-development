@@ -170,7 +170,7 @@ def test_filled_prompts_with_code_pass(tmp_path):  # r14, r15: quoted code / ver
     c = c.replace("<the user's request verbatim, including any stated future plans; nothing added by the orchestrator>",
                   'A tool with <table> views and a -> b pipes')
     c = c.replace('<~/.acgd/<project>/counterspec_<A|B>_r<N>.md (absolute path)>', '/w/counterspec_A_r1.md')
-    c = '\n'.join(l for l in c.split('\n') if not l.startswith('[Add-on only]'))
+    c = '\n'.join(l for l in c.split('\n') if not l.startswith('[The existing system offers'))
     w(tmp_path, 'prompts/counterspec_A_r1.md', c)
     assert run(tmp_path, 'rules', 'prompts/counterspec_A_r1.md')[0] == 0
 

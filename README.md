@@ -2,7 +2,7 @@
 
 **Contract-governed delivery for teams of AI coding agents**
 
-> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield steps) are
+> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield steps, judged-item stances) are
 > validated in simulations only, not yet in a real multi-agent build.
 
 > *Align every contributor — human or AI agent — to a single source of truth, verify every boundary independently,
@@ -41,7 +41,7 @@ Cross-module defects are **structural**, so ACGD remediates them structurally:
 - **Checkpoint Loops per Component** — no global phase gate: a component is *green* when a full round of fresh reviews
   passes; red-team and quality loops run at every green checkpoint and end by convergence, never by a round cap.
 - **Human-in-Command, Never Required** — a single `Ask the user: yes|no` switch. `no`: the loop decides, logs every
-  decision under *Decisions open to steer*, and never waits. The user's instruction always overrides, effective at the
+  ask-point decision under *Decisions open to steer*, and never waits. The user's instruction always overrides, effective at the
   next step.
 - **Compliance Gates** — `spec_check.py` (marks, ledger dispositions, acknowledgements, open questions, rule-copy
   integrity, prompt completeness, coverage) and `verify_citations.py` (every `Cite:` points at real code), backed by
