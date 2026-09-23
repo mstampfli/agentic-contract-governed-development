@@ -1,4 +1,4 @@
-# CBF Delivery Lifecycle
+# ACGD Delivery Lifecycle
 
 A summary of the operating model. The normative text is [`skill/SKILL.md`](../skill/SKILL.md); agent rules live in
 [`skill/templates/rules.md`](../skill/templates/rules.md).

@@ -1,11 +1,15 @@
-# Consistent Build Framework (CBF)
+# Agentic Contract-Governed Development (ACGD)
 
-**Contract-First Governance for Multi-Agent Software Delivery**
+**Contract-governed delivery for teams of AI coding agents**
+
+> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield steps) are
+> validated in simulations and are now in their first real multi-agent build; this README will be revised with those
+> results.
 
 > *Align every contributor — human or AI agent — to a single source of truth, verify every boundary independently,
 > and converge on a defect-free, cross-module-consistent system without human bottlenecks.*
 
-CBF is an operating model and toolchain for building multi-module software with parallel AI coding agents (or one
+ACGD is an operating model and toolchain for building multi-module software with parallel AI coding agents (or one
 agent over a long engagement). It ships as a [Claude Code](https://claude.com/claude-code) skill: a governance
 playbook, role-scoped agent briefs, specification templates, and mechanical compliance gates.
 
@@ -14,9 +18,9 @@ playbook, role-scoped agent briefs, specification templates, and mechanical comp
 ## The problem statement
 
 Telling an agent "be consistent" does not work. The instruction is understood — and still not followed.
-Cross-module defects are **structural**, so CBF remediates them structurally:
+Cross-module defects are **structural**, so ACGD remediates them structurally:
 
-| Root cause (observed in controlled trials) | CBF control |
+| Root cause (observed in controlled trials) | ACGD control |
 |---|---|
 | Contracts pin signatures, not data, state or failure behaviour | **Interface Registry** — formats, state, calls, failure contracts; one accountable owner per entry |
 | Consumers are built before producers and invent them | **Dependency-ordered delivery**; consumers read and cite the real implementation |
@@ -51,10 +55,10 @@ normative playbook.
 
 ## Evidence
 
-Measured in A/B trials (same task, same model; arm A = plain multi-agent build, arm B = CBF), with acceptance tests
+Measured in A/B trials (same task, same model; arm A = plain multi-agent build, arm B = ACGD), with acceptance tests
 written before any code and hidden from builders, and blind audits of anonymised copies:
 
-| Metric | Plain build | CBF |
+| Metric | Plain build | ACGD |
 |---|---|---|
 | Hidden acceptance tests (message-queue trial, 6 writers) | 15 / 17 | **17 / 17** |
 | Cross-module breaks found by blind audit | several (nested size limits, unknown outcomes reported as failures, stuck reopen) | **none of those** |
@@ -63,7 +67,7 @@ written before any code and hidden from builders, and blind audits of anonymised
 | Throughput vs. plain build | baseline | comparable |
 | Token cost | 1× | **≈ 20×** |
 
-**Limitations, stated plainly:** two trials, one run per arm — indicative, not proven. CBF only prevents drift in
+**Limitations, stated plainly:** two trials, one run per arm — indicative, not proven. ACGD only prevents drift in
 what it registers (an unregistered convention still drifted). Defects inside a single module need the red team and
 tests. The cost is substantial; tiers, batching and "question scope" exist to contain it.
 
@@ -88,9 +92,9 @@ docs/LIFECYCLE.md             delivery lifecycle overview
 ## Installation
 
 ```bash
-git clone https://github.com/mstampfli/consistent-build-framework
+git clone https://github.com/mstampfli/agentic-contract-governed-development acgd
 mkdir -p ~/.claude/skills
-cp -r consistent-build-framework/skill ~/.claude/skills/consistent-build
+cp -r acgd/skill ~/.claude/skills/consistent-build   # the skill's technical name (for now)
 ```
 
 Then ask Claude Code for a multi-module build (or invoke `/consistent-build`). Requirements: Python 3.10+ for the
