@@ -48,7 +48,7 @@ No role line (e.g. a session working directly for the user):
 - ACK every amendment whose "Affected:" names you: append `ACK V<k> <your id>` to ASSUMPTIONS.md.
 - Stay inside the project root (read and write); never read `prompts/`.
 - You may write: your module files; `tests_own/test_<your id>_*`, `tests_own/data_<your id>_*`; ledger appends
-  (entries headed with your id, ACK lines naming it). Never `tests_review/`, other writers' files, the spec.
+  (entries headed with your id, ACK lines naming it). Never `tests_review/`, `tests/acceptance/` (run them, don't edit), other writers' files, the spec.
 - Registered entry or `PROJ` file (build/test config, package init) must change → CHANGE REQUEST in your reply
   (blocking → also QUESTIONS.md): the change + every consumer found. Code changes only after the amendment merges,
   owner first, then consumers (`PROJ`: the orchestrator changes it).

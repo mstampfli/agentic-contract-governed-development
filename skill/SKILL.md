@@ -39,7 +39,7 @@ case → tiers, batching, "question scope").
 * **Module**: unit with its own writer; module table row = id, files, Depends-on.
   * Id: letter, then letters/digits/`_` (no hyphens — ids sit in `ASSUMPTION-<id>-<n>`).
   * Every root file belongs to one row (user config/data included), except process files (`INTERFACES*.md`, ledgers,
-    `STATUS.md`, `PROCESS.md`, `concerns.md`, `AGENTS.md`/`CLAUDE.md`, `prompts/`, `snapshots/`, `tests_review/`) and
+    `STATUS.md`, `PROCESS.md`, `concerns.md`, `AGENTS.md`/`CLAUDE.md`, `prompts/`, `snapshots/`, `tests_review/`, `tests/acceptance/`) and
     `tests_own/` (belongs to the writer whose id the file carries).
   * `PROJ` row (always present): build config, package `__init__`, test-runner config (collects `tests_own/`,
     `tests_review/`; `test_` = pytest default, set the pattern for other runners). Written by the orchestrator; writers
@@ -79,7 +79,10 @@ case → tiers, batching, "question scope").
     achievable semantics, stated exactly (in V0: a rule + changelog line) — an ask-point.
 * **Acceptance tests**: end-to-end, public interface, written by the orchestrator, kept with the measurement scripts
   in the **work directory** `~/.consistent-build/<project>/acceptance/` (path in `STATUS.md`, so a later session finds
-  it). Never given to writers (they stay inside the root; the tests live outside it).
+  it). Hidden from writers only while the components they exercise are being built (writers game visible tests —
+  observed); once those components are green, the orchestrator moves the tests into the project's
+  `tests/acceptance/` as regular regression tests (writers may run them, never edit them). Tests for new features or
+  add-ons start hidden again.
   Run once every component they exercise is green, and at every later checkpoint. External services: tested against
   fakes; a feature on one is done when it passes against fakes; a real-service check is a decision. The
   orchestrator's fakes live in the work directory; writers build their own in `tests_own/`; the protocol a fake
@@ -183,7 +186,7 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/consistent-build`).
   prompt.
 * **Subagents** get CLAUDE.md only lazily (after reading a file there) → the prompt copy is mandatory; put the absolute
   project root in every prompt (cwd may be reset).
-* **Writers** never get review / red-team prompts (`prompts/` off limits), acceptance tests or measurement scripts; user
+* **Writers** never get review / red-team prompts (`prompts/` off limits), hidden acceptance tests or measurement scripts; user
   requirements and the bar are requirements for them, not hidden grading.
 
 ## Phases (Mode 1: several agents; per component, no global phase)
