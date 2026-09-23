@@ -1,0 +1,20 @@
+name: compliance-gates
+
+on: [push, pull_request]
+
+jobs:
+  gates:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: pip install pytest
+      - name: Regression suite
+        run: python -m pytest -q skill/tests
+      - name: Rules copies are regenerated and verbatim
+        run: |
+          python tools/gen_templates.py
+          git diff --exit-code skill/templates
+          for f in skill/templates/*; do python skill/spec_check.py rules "$f"; done

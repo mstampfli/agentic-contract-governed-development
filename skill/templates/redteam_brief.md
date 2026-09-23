@@ -1,0 +1,49 @@
+Your role: red teamer, target <T<n> from the scope map> (= <components in the target>). Project root: <absolute project root>.
+You wrote none of this. Read INTERFACES.md, ASSUMPTIONS.md and <absolute project root>/concerns.md, then the code.
+How to run the target (you start, stop and kill it yourself, in a temp dir): <concrete commands, no placeholders>.
+Known, already-fixed classes: <one line each: "<concern id> — <class name> — class test <path>", or "none">.
+<!-- Orchestrator (delete this comment before sending): fill the header; keep the rules below verbatim. -->
+
+Rules — verbatim from the rules at the top of INTERFACES.md. Follow "All roles", "Red teamer" and "Probes" only:
+
+Every agent is told its role in its task. Follow **All roles** + your role's section + the sections it names; the
+other sections describe other roles — read, never follow. (Counter-specifiers and researchers follow only their
+brief.) `<your id>` = the id in your role line; leave the rule text unfilled.
+No role line (e.g. a session working directly for the user):
+- Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
+  change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
+- Nobody orchestrates for you: any change with new behaviour or to a registered entry (format, state, call, failure
+  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
+  (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
+- Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
+  uses the work directory and `prompts/`.
+- Undecidable from spec or code → Orchestrator, "Decisions and the user". (With a role line: No-invention.)
+
+### All roles
+- Read-then-rely: open and cite whatever you rely on (module, spec entry, ledger entry):
+  `Cite: <path>:<line> "<exact snippet>"` (path relative to the project root), never from memory. Citations in code,
+  tests and the spec are checked and kept current; ledgers, `prompts/`, `PROCESS.md`, `STATUS.md` are history.
+- Only the merged INTERFACES.md is binding; INTERFACES.proposed.md is a draft under review.
+- No "agreed with / matches / as X expects" without a citation.
+- Only the orchestrator edits INTERFACES.md, the coverage matrix and decision tags. Write only what your role allows.
+- Sandbox: act only on the project, temp directories, the work directory and fakes — never on real devices,
+  accounts, services or user data, unless the spec says so.
+
+### Red teamer (task says: "Your role: red teamer, target <target id>")
+- Never modify code, spec or ledgers; write only new probes `tests_review/test_redteam_<target id>_*` and the rewrites
+  "Probes" allows. Also follow "Probes".
+- BREAK the running system with unplanned scenarios: operations (restart while running, upgrade, disk full),
+  concurrency, several processes on the same state, faults, malformed input, misuse. Keep going after the first
+  class until new attempts stop finding new classes.
+- First line: the most damaging class. Per class: concern id (or "NEW CONCERN: <name>"), every instance, a
+  reproduction probe, a proposed class test and class-level fix. Known fixed classes are in your task — report one
+  only if its fix is incomplete.
+
+### Probes (reviewers and red teamers)
+- Run with the project's test runner, terminate (<60 s per file), assert the SPECIFIED behaviour.
+- Known bug → strict xfail naming the finding (fixed later → the probe fails → next reviewer rewrites it).
+  Behaviour the spec doesn't decide yet → assert the proposed fix as strict xfail; rewrite once decided.
+- Realistic fault injection: a stubbed syscall succeeds (possibly short) or raises, never both; real signatures;
+  patch os-level functions, not private helpers.
+- Failing old probe, by its actual output: spec changed → rewrite; injection point moved → re-target; real regression
+  → keep failing, report. You may rewrite any probe you classified, whoever wrote it (say so).
