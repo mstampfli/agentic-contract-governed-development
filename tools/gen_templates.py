@@ -28,7 +28,7 @@ The spec is `INTERFACES.md` (binding; drafts under review are in `INTERFACES.pro
 Ledgers: `QUESTIONS.md`, `ASSUMPTIONS.md`. Review and red-team probes: `tests_review/`. Concern catalog: `concerns.md`.
 Live status (decisions open to steer, green state, quality-bar measurements, open questions, what is running, the
 acceptance-test path): `STATUS.md`.
-Process: the consistent-build skill at `<skill dir>` (SKILL.md; prompts from templates/*_brief.md; checks
+Process: the acgd skill at `<skill dir>` (SKILL.md; prompts from templates/*_brief.md; checks
 `python3 <skill dir>/spec_check.py all INTERFACES.md ASSUMPTIONS.md` and `python3 <skill dir>/verify_citations.py .`).
 
 '''+R.rstrip().replace('## Rules (canonical source)', '## Rules (verbatim copy of templates/rules.md — all roles)')+'\n')
@@ -39,12 +39,13 @@ Read INTERFACES.md fully, then the existing code of every module you depend on.
 Task: <files / what to build or fix>. Project specifics: <language, allowed libraries, style, test runner — or "none">.
 [Owner's calls:] Details left to you, decide each and record it as your ASSUMPTION: <list>.
 [Fix task:] Findings to fix, each with its class: <list>.
-[Quality task:] Quality-bar items below target (measured vs target) and accepted simplifications: <list>.
+[Quality task:] Quality-bar items below target (measured vs target; judged: stance and the single biggest gap) and accepted simplifications: <list>.
 <!-- Orchestrator (delete this comment before sending): fill the header lines only; delete bracketed lines that do not
      apply and drop the brackets on the ones you keep ("[Fix task:]" → "Fix task:"); keep the rules below verbatim. To resume a writer after its question is answered, don't send this brief again: send
      "Question <Q-id> answered by amendment V<k>: re-read <entries>, ACK V<k>, continue" to the same agent with
      SendMessage; after a stop for a user
-     change: "V<k> merged: re-read <entries>, ACK V<k>, continue <item>". -->
+     change: "V<k> merged: re-read <entries>, ACK V<k>, continue <item>"; a first fix: "Fix task: <findings, each with its
+     class>". -->
 ''',[ALL,WR],'"All roles" and "Writer / fixer"')
 brief(B+'review_brief.md','''Your role: reviewer, kind <spec-change | module | seam | quality>, id <module id, seam A-B, "spec", component id or T<n>>.
 Project root: <absolute project root>. You wrote none of this. Read INTERFACES.md (and INTERFACES.proposed.md for a
@@ -64,7 +65,7 @@ Scope for your kind:
 - seam <A-B>: [Re-review: previous findings <list>; diff: `diff -ru <snapshot dir> <files>`.] the code on BOTH sides; run them together; inject failures across the seam; what does each side believe
   afterwards?
 - quality <component or T<n>>: [Re-review: previous findings <list>.] the spec's "User requirements" and "Quality bar" sections, <measurement commands>, <acceptance tests path>,
-  <reference system and how to run it, or "none">. Run every measured item (and on the reference system where runnable); judge every judged item
+  <reference system and how to run it, or the path of its collected material, or "none">. Run every measured item (and on the reference system where runnable); judge every judged item
   by using the public interface as a user would. Report each item: met / below (by how much — within or beyond its
   hard limit —, why, the change that closes it, or "no change expected to help") / not built yet (what is missing and which planned component would provide it). Then simplifications:
   code traced to no spec entry, fixed class or acceptance test; duplication; handling of failures outside the failure

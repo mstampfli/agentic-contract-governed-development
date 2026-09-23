@@ -184,7 +184,7 @@ def rules(path, rules_path=None):
     rules_path = rules_path or os.path.join(os.path.dirname(os.path.abspath(__file__)), 'templates', 'rules.md')
     src, text, out = read(rules_path), read(path), []
     # <your id> stays unfilled; the work directory's <project> may be filled in (AGENTS.md is filled per project)
-    norm = lambda x: re.sub(r'[^\s`(]*\.consistent-build/[^/\s`]+/', '~/.consistent-build/P/',
+    norm = lambda x: re.sub(r'[^\s`(]*\.acgd/[^/\s`]+/', '~/.acgd/P/',
                             re.sub(r'<your id>|<ID>', '<id>', re.sub(r'\s+', ' ', x))).strip()
     secs = dict((h[4:].split(' (')[0], (h, b)) for h, b in re.findall(r'^(### [^\n]+)\n(.*?)(?=^### |\Z)', src, re.M | re.S))
     intro = src[src.index('Every agent is told'):src.index('### All roles')]

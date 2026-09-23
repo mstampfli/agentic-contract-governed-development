@@ -3,8 +3,7 @@
 **Contract-governed delivery for teams of AI coding agents**
 
 > **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield steps) are
-> validated in simulations and are now in their first real multi-agent build; this README will be revised with those
-> results.
+> validated in simulations only, not yet in a real multi-agent build.
 
 > *Align every contributor — human or AI agent — to a single source of truth, verify every boundary independently,
 > and converge on a defect-free, cross-module-consistent system without human bottlenecks.*
@@ -94,10 +93,10 @@ docs/LIFECYCLE.md             delivery lifecycle overview
 ```bash
 git clone https://github.com/mstampfli/agentic-contract-governed-development acgd
 mkdir -p ~/.claude/skills
-cp -r acgd/skill ~/.claude/skills/consistent-build   # the skill's technical name (for now)
+cp -r acgd/skill ~/.claude/skills/acgd
 ```
 
-Then ask Claude Code for a multi-module build (or invoke `/consistent-build`). Requirements: Python 3.10+ for the
+Then ask Claude Code for a multi-module build (or invoke `/acgd`). Requirements: Python 3.10+ for the
 gates, `pytest` for the regression suite.
 
 ## Governance of the framework itself

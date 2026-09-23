@@ -35,8 +35,8 @@ No role line (e.g. a session working directly for the user):
   Can't import the owner's code (e.g. another language — a separate process is no reason)? Implement FMT-n exactly as
   written, in one place, with a contract test `tests_own/test_<your id>_contract_*` against the owner's golden bytes;
   owners of such formats publish them as `tests_own/data_<your id>_golden_*`.
-- No-invention: a fact in neither spec nor code → QUESTIONS.md (blocking: stop that item, say so in your reply) or
-  ASSUMPTIONS.md (non-blocking: `## ASSUMPTION-<your id>-<n> — <text>`, code marked with the same id).
+- No-invention: a fact in neither spec nor code → QUESTIONS.md (blocking — another module or a user
+  requirement depends on the answer: stop that item, say so in your reply) or ASSUMPTIONS.md (non-blocking: `## ASSUMPTION-<your id>-<n> — <text>`, code marked with the same id).
 - User requirements and the quality bar are requirements: meet the items your module affects. Add no code path the
   spec doesn't need (no failure-model item → ask, don't build).
 - ACK every amendment whose "Affected:" names you: append `ACK V<k> <your id>` to ASSUMPTIONS.md.
@@ -65,7 +65,9 @@ No role line (e.g. a session working directly for the user):
   assumptions contradict? Report behaviour no spec entry or assumption explains. Propose coverage changes.
 - Kind quality — per "User requirements" target and "Quality bar" item: met / below (measured vs target, within or
   beyond the hard limit, why, the change that closes it or "no change expected to help") / not built yet (what, which
-  planned component). Then simplifications (code traced to no spec entry, fixed class or acceptance test;
+  planned component). Judged items by their stance: beat / match → run ours and the reference through the same
+  scenario, say which is better or "tie" and the single biggest gap; differ → is ours distinct on each identity axis, and not
+  worse on each floor axis; criterion → against the criterion. Then simplifications (code traced to no spec entry, fixed class or acceptance test;
   duplication; handling of failures outside the failure model), each with the tests showing it is safe. No concern
   ids, severities or assumption verdicts. First line: the gap that most blocks the bar.
 
@@ -88,7 +90,7 @@ No role line (e.g. a session working directly for the user):
   reproduction probe, a proposed class test and class-level fix. Known fixed classes are in your task — report one
   only if its fix is incomplete.
 
-### Orchestrator (the agent running the consistent-build skill)
+### Orchestrator (the agent running the acgd skill)
 - Edits INTERFACES.md only via drafts in INTERFACES.proposed.md (semantic: + fresh review; bookkeeping: mechanical
   checks); decides every assumption and change request.
 - Decisions and the user:
@@ -97,16 +99,16 @@ No role line (e.g. a session working directly for the user):
   - Ask-points: a product decision (what the user sees or gets — incl. a merge disagreement about one and the
     details of a requested feature; a feature the user asked for is itself authorized, even one deleting data); a
     change weakening a user requirement; a correctness requirement that proves impossible or contradicts another;
-    the quality-bar pick; accepting a bar miss; a measured item still beyond its hard limit after a redesign; a
+    the quality-bar pick; accepting a bar miss; a bar item still beyond its hard limit after a redesign; a
     feature nobody asked for that deletes user data; an action that cannot be undone (deleting user data; changing
-    anything outside the project other than the skill directory, the work directory `~/.consistent-build/<project>/`
+    anything outside the project other than the skill directory, the work directory `~/.acgd/<project>/`
     — acceptance tests, measurement scripts, counter-specs, drafts, researcher output, stamp files, reference
     systems —, a project virtualenv, temp directories); building the planned ("later") features once the rest is
     done; anything unclear. Example: "keep the last 7 daily backups" is authorized; automatic vs explicit pruning and
     what "daily" means are product decisions. Technical disagreements are yours to
     decide. At an ask-point read "Ask the user:" at the top of AGENTS.md (missing = no).
   - No → decide: the better option by the user's goals and requirements; between equally good options, the one that
-    can be undone. Breaking a user requirement is only an alternative (a performance target missed within its hard
+    can be undone. Breaking a user requirement is only an alternative (a bar item missed within its hard
     limit is a reported miss, not a broken requirement); impossible — redesign still fails, reason stated — or
     contradictory correctness requirement → closest achievable semantics, stated exactly; beyond the hard limit after
     a redesign → reset target (semantic amendment of its bar row). Record ask-point decisions in STATUS.md "Decisions
@@ -115,7 +117,7 @@ No role line (e.g. a session working directly for the user):
   - Yes → ask; only that item waits.
   - A user decision replaces its "Decisions open to steer" entry; switching to yes re-asks nothing.
   - Never decided away while a fix is possible (only the user's word changes this): a failing correctness
-    requirement, a measured item beyond its hard limit → fresh builder, then spec change or redesign.
+    requirement, a bar item beyond its hard limit → fresh builder, then spec change or redesign.
 - Also writing code (single-agent work) → follow Writer / fixer for it; your own tests never verify your change;
   reviews stay fresh agents.
 - Spawn every agent with its role line + brief; run all mechanical checks yourself after every writer run; never
@@ -144,8 +146,9 @@ Red-team targets (runnable composites of green components):
 |---|---|---|
 
 ## Quality bar (the user's performance/quality targets + orchestrator-set items for areas the user left open — those are an ask-point; "none beyond green" is a valid decision)
-| Item | Kind (measured / judged) | How (workload or scenario in words — scripts stay hidden) | Target (vs reference) | Hard limit (default 3× worse; "≥ X" target → X/3) |
-|---|---|---|---|---|
+Default stance: <beat | match | differ | criterion> (items may override)
+| Item | Kind (measured / judged) | How (workload or scenario in words — scripts stay hidden) | Stance (judged) | Target (vs reference) | Hard limit (measured: default 3× worse; "≥ X" target → X/3; judged: fallback stance (default: beat → match; others none = any shortfall is a reported miss); a user's "must": the stance itself) |
+|---|---|---|---|---|---|
 
 ## Modules (identity → files)
 | Id | Files | Depends on |

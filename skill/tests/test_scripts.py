@@ -25,7 +25,7 @@ def project(tmp, fill=True):
     w(tmp, 'INTERFACES.md', spec)
     a = open(os.path.join(T, 'AGENTS.md.template')).read().split('\n', 3)[3]
     if fill:
-        a = a.replace('<project>', 'demo').replace('<skill dir>', '/skills/cb')
+        a = a.replace('<project>', 'demo').replace('<skill dir>', '/skills/acgd')
     w(tmp, 'AGENTS.md', a)
     os.symlink('AGENTS.md', os.path.join(tmp, 'CLAUDE.md'))
     w(tmp, 'ASSUMPTIONS.md', '')
@@ -169,7 +169,7 @@ def test_filled_prompts_with_code_pass(tmp_path):  # r14, r15: quoted code / ver
     c = open(os.path.join(T, 'counterspec_brief.md')).read()
     c = c.replace("<the user's request verbatim, including any stated future plans; nothing added by the orchestrator>",
                   'A tool with <table> views and a -> b pipes')
-    c = c.replace('<~/.consistent-build/<project>/counterspec_<A|B>_r<N>.md (absolute path)>', '/w/counterspec_A_r1.md')
+    c = c.replace('<~/.acgd/<project>/counterspec_<A|B>_r<N>.md (absolute path)>', '/w/counterspec_A_r1.md')
     c = '\n'.join(l for l in c.split('\n') if not l.startswith('[Add-on only]'))
     w(tmp_path, 'prompts/counterspec_A_r1.md', c)
     assert run(tmp_path, 'rules', 'prompts/counterspec_A_r1.md')[0] == 0
@@ -209,7 +209,7 @@ def test_all_agents_problems_without_prompts_dir(tmp_path):
 
 def test_all_absolute_workdir_in_agents(tmp_path):  # r13, r14
     project(tmp_path)
-    a = (tmp_path / 'AGENTS.md').read_text().replace('~/.consistent-build/demo/', '/home/u/.consistent-build/demo/')
+    a = (tmp_path / 'AGENTS.md').read_text().replace('~/.acgd/demo/', '/home/u/.acgd/demo/')
     (tmp_path / 'AGENTS.md').write_text(a)
     assert run(tmp_path, 'all', 'INTERFACES.md', 'ASSUMPTIONS.md')[0] == 0
 

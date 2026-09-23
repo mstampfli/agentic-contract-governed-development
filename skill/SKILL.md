@@ -1,9 +1,9 @@
 ---
-name: consistent-build
+name: acgd
 description: Keep a multi-module codebase consistent across modules and across writers (several agents, or one agent over a long task). Use when modules exchange data, share persisted state, or depend on each other's failure behavior — greenfield parallel builds, extending a built system, and ongoing work in an existing codebase.
 ---
 
-# consistent-build
+# ACGD — Agentic Contract-Governed Development
 
 "Be consistent" as an instruction fails; cross-module bugs have structural causes, fixed by structure:
 
@@ -74,11 +74,11 @@ case → tiers, batching, "question scope").
   their text; only the mark is added. Moving a planned feature to "now" `Touches:` its REQ-n.
   * Correctness (never lose data, exactly once, bit-for-bit) and stated features → acceptance tests. Hard: never
     accepted failing, never built upon failing.
-  * Performance/quality targets ("under 200 ms") → measured quality-bar items.
+  * Performance/quality targets ("under 200 ms") → quality-bar items (measured or judged).
   * Impossible (its redesign still fails, reason stated) or contradictory correctness requirement → closest
     achievable semantics, stated exactly (in V0: a rule + changelog line) — an ask-point.
 * **Acceptance tests**: end-to-end, public interface, written by the orchestrator, kept with the measurement scripts
-  in the **work directory** `~/.consistent-build/<project>/acceptance/` (path in `STATUS.md`, so a later session finds
+  in the **work directory** `~/.acgd/<project>/acceptance/` (path in `STATUS.md`, so a later session finds
   it). Hidden from writers only while the components they exercise are being built (writers game visible tests —
   observed); once those components are green, the orchestrator moves the tests into the project's
   `tests/acceptance/` as regular regression tests (writers may run them, never edit them). Tests for new features or
@@ -91,7 +91,16 @@ case → tiers, batching, "question scope").
   the user named none (ask-point).
   * Measured: workload, target (preferably vs a reference system), **hard limit** (default 3× worse; for a "≥ X"
     target: X/3; user may set per item).
-  * Judged: scenario + criterion.
+  * Judged: scenario + criterion + **stance** toward the named reference:
+    * beat: judge sees ours and the reference in the same scenario; ours must be picked;
+    * match: ours must not be picked worse (a tie passes);
+    * differ: named identity axes where ours must be recognisably different (a judge describing both gives
+      different answers) + floor axes where it must not be worse;
+    * criterion: no reference, judged against the criterion alone.
+    Reference not runnable → compare against collected material (footage, screenshots, published numbers) in the
+    work directory, never from memory.
+    Project default in the section; stance per item is part of the bar's ask-point. Hard limit: fallback stance
+    (default: beat → match; others none = any shortfall is a reported miss); a user's "must": the stance itself.
   * "None beyond green" is a valid recorded decision. Writers see the bar in words; scripts stay hidden; results →
     `STATUS.md`.
 * **Decisions vs status**: spec = decisions (entries, requirements, scope, targets, bar, coverage), changed only by
@@ -99,7 +108,7 @@ case → tiers, batching, "question scope").
   green; red-team rounds; bar measurements + history; quality gaps and reported misses; open questions; open coverage
   count; what is running; work directory path.
 * **Done** (current scope): all components green; red-team loops converged; acceptance tests pass; every bar item met
-  or a reported miss (measured: within its hard limit).
+  or a reported miss (within its hard limit).
 
 ## The spec: INTERFACES.md (template in `templates/`)
 Sections: rules (verbatim), **failure model**, **user requirements**, **scope map**, quality bar, module table,
@@ -113,7 +122,7 @@ helpers, R1 formats, R2 state, R3 calls, R4 failure contracts, coverage, traces,
   (integer bounds, which error a bad argument raises): one home each (observed: unregistered convention → two
   exception types).
 * **Scope map**: components, modules, dependencies, scope now / planned / undecided (planned boundaries provisional),
-  targets `T<n>`.
+  targets `T<n>` (listed at V0; a new one = bookkeeping amendment).
 * **Coverage** (orchestrator edits; reviewers propose): concern (`concerns.md`) × seam; cell = entry ref / `out:
   <reason>` / `n/a` / `open`. Columns from Depends-on pairs + external boundaries, refined as entries appear.
   `spec_check.py coverage` = what is open / needed next. It records only known concern kinds; discovery finds new
@@ -173,7 +182,7 @@ helpers, R1 formats, R2 state, R3 calls, R4 failure contracts, coverage, traces,
 ## Rules and roles
 `templates/rules.md` = single source, sections **All roles**, **Writer / fixer**, **Reviewer**, **Probes**, **Red
 teamer**, **Orchestrator**; each agent follows All roles + its role's sections only. Scripts/templates live in the
-skill directory (`<skill dir>`, e.g. `~/.claude/skills/consistent-build`).
+skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 * **Copies**: spec and `AGENTS.md` carry all sections; `CLAUDE.md` → symlink to `AGENTS.md` (`ln -s AGENTS.md
   CLAUDE.md`; verified: the lazy CLAUDE.md load follows it; no symlinks → copy after every change). Prompts carry role
   line + All roles + own sections (briefs in `templates/`; counter-specifier / researcher briefs carry none). Fill
@@ -191,14 +200,15 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/consistent-build`).
 
 ## Phases (Mode 1: several agents; per component, no global phase)
 1. **Discover** (initial system and every add-on), in order:
-   * create the work directory. Two fresh agents write **blind counter-specs** there (`counterspec_brief.md`) from the
+   * create the work directory `~/.acgd/<project>/` (`<project>` = the project root's directory name). Two fresh agents write **blind counter-specs** there (`counterspec_brief.md`) from the
      user's request verbatim incl. future plans (add-on: its request — for a planned feature the original words
      about it — + a summary of the existing external interface). No failure model or draft from you, so they cannot inherit your blind spots. Prompts: before
      setup in `<work dir>/prompts/`, copied into `prompts/` at setup; add-on: straight into `prompts/`, next `r<N>`.
      Your own draft in parallel, in the work directory;
    * **setup** after both: copy `concerns.md`; create `QUESTIONS.md`, `ASSUMPTIONS.md`, `PROCESS.md` (orchestrator
      mistakes → process changes), `STATUS.md` (with work-dir path), `prompts/`, `tests_own/`, `tests_review/`,
-     `snapshots/`, PROJ test config, `AGENTS.md` + `CLAUDE.md` symlink (now, so counter-specifiers can't read it);
+     `snapshots/`, PROJ test config, `AGENTS.md` (`<project>`, `<skill dir>` filled, absolute) + `CLAUDE.md`
+     symlink (now, so counter-specifiers can't read it);
    * **merge** into `INTERFACES.proposed.md`; the all / some / one list goes in the changelog. All → keep.
      Disagreement → decide, reason in the changelog (product decision → ask-point; technical → yours). Only one →
      adopt, or `out: <reason>` in coverage ("not adopted: <reason>" in the changelog if not a cell). Open questions
@@ -208,12 +218,13 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/consistent-build`).
    * **1–2 reference systems** (yourself or researchers, `researcher_brief.md`): what they handle and the draft doesn't
      = gap candidate (e.g. a data-dir lock);
    * **acceptance tests** for correctness requirements and stated features;
-   * **quality bar**: the user's targets + for each area the user left open 2–3 candidates, each named, obtainable
+   * **quality bar**: the user's targets + for each stated feature / component without a user target 2–3 candidates, each named, obtainable
      and comparable (e.g. a reference system's benchmark) — an ask-point; script measured items;
    * **run the reference system** where it runs locally (install in the work directory or a virtualenv): same
      workload → baseline; same public interface → also the acceptance tests (a test the mature system fails is
      probably wrong — observed: an over-reaching acceptance test);
-   * fill coverage (incl. merge `out:`s) and scope map → spec-change review of the whole file → fix → merge as V0
+   * fill coverage (incl. merge `out:`s) and scope map → spec-change review of the whole file → fix → fresh re-review until
+     no blocking finding → merge as V0
      (add-on: next `## V<k>`, reviewed as a spec change).
 2. **Build loop** (a component starts once its dependencies are green; independent ones in parallel): writer →
    mechanical checks → fresh module review → seam reviews of changed seams → fixes by class → repeat until a full
@@ -237,9 +248,9 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/consistent-build`).
      except strict-xfail probes of findings just fixed); needs a new/changed registry entry (e.g. a search index =
      new state) → change protocol first;
    * not built yet: specified → waits for its build; unspecified → scope map → next plan / extend;
-   * ends by convergence, no round count: no accepted simplification pending, and a fresh reviewer finds nothing
-     below the bar or no change expected to help.
-     Still below then = **miss**, reported with the best value — measured items only if within the hard limit.
+   * ends by convergence, no round count: no accepted simplification pending, and a fresh reviewer finds every
+     item met, or below with "no change expected to help".
+     Still below then = **miss**, reported with the best value — only if within its hard limit.
      Beyond it = failure: escalate like correctness (fresh builder → spec change / redesign); still beyond after the
      redesign → ask-point (reset target = semantic amendment of its bar row);
    * **done** → report with `STATUS.md` (met, misses, decisions open to steer). Planned ("later") features = ask-point;

@@ -3,12 +3,13 @@ Read INTERFACES.md fully, then the existing code of every module you depend on.
 Task: <files / what to build or fix>. Project specifics: <language, allowed libraries, style, test runner — or "none">.
 [Owner's calls:] Details left to you, decide each and record it as your ASSUMPTION: <list>.
 [Fix task:] Findings to fix, each with its class: <list>.
-[Quality task:] Quality-bar items below target (measured vs target) and accepted simplifications: <list>.
+[Quality task:] Quality-bar items below target (measured vs target; judged: stance and the single biggest gap) and accepted simplifications: <list>.
 <!-- Orchestrator (delete this comment before sending): fill the header lines only; delete bracketed lines that do not
      apply and drop the brackets on the ones you keep ("[Fix task:]" → "Fix task:"); keep the rules below verbatim. To resume a writer after its question is answered, don't send this brief again: send
      "Question <Q-id> answered by amendment V<k>: re-read <entries>, ACK V<k>, continue" to the same agent with
      SendMessage; after a stop for a user
-     change: "V<k> merged: re-read <entries>, ACK V<k>, continue <item>". -->
+     change: "V<k> merged: re-read <entries>, ACK V<k>, continue <item>"; a first fix: "Fix task: <findings, each with its
+     class>". -->
 
 Rules — verbatim from the rules at the top of INTERFACES.md. Follow "All roles" and "Writer / fixer" only:
 
@@ -41,8 +42,8 @@ No role line (e.g. a session working directly for the user):
   Can't import the owner's code (e.g. another language — a separate process is no reason)? Implement FMT-n exactly as
   written, in one place, with a contract test `tests_own/test_<your id>_contract_*` against the owner's golden bytes;
   owners of such formats publish them as `tests_own/data_<your id>_golden_*`.
-- No-invention: a fact in neither spec nor code → QUESTIONS.md (blocking: stop that item, say so in your reply) or
-  ASSUMPTIONS.md (non-blocking: `## ASSUMPTION-<your id>-<n> — <text>`, code marked with the same id).
+- No-invention: a fact in neither spec nor code → QUESTIONS.md (blocking — another module or a user
+  requirement depends on the answer: stop that item, say so in your reply) or ASSUMPTIONS.md (non-blocking: `## ASSUMPTION-<your id>-<n> — <text>`, code marked with the same id).
 - User requirements and the quality bar are requirements: meet the items your module affects. Add no code path the
   spec doesn't need (no failure-model item → ask, don't build).
 - ACK every amendment whose "Affected:" names you: append `ACK V<k> <your id>` to ASSUMPTIONS.md.

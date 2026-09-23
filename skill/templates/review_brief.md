@@ -16,7 +16,7 @@ Scope for your kind:
 - seam <A-B>: [Re-review: previous findings <list>; diff: `diff -ru <snapshot dir> <files>`.] the code on BOTH sides; run them together; inject failures across the seam; what does each side believe
   afterwards?
 - quality <component or T<n>>: [Re-review: previous findings <list>.] the spec's "User requirements" and "Quality bar" sections, <measurement commands>, <acceptance tests path>,
-  <reference system and how to run it, or "none">. Run every measured item (and on the reference system where runnable); judge every judged item
+  <reference system and how to run it, or the path of its collected material, or "none">. Run every measured item (and on the reference system where runnable); judge every judged item
   by using the public interface as a user would. Report each item: met / below (by how much — within or beyond its
   hard limit —, why, the change that closes it, or "no change expected to help") / not built yet (what is missing and which planned component would provide it). Then simplifications:
   code traced to no spec entry, fixed class or acceptance test; duplication; handling of failures outside the failure
@@ -60,7 +60,9 @@ No role line (e.g. a session working directly for the user):
   assumptions contradict? Report behaviour no spec entry or assumption explains. Propose coverage changes.
 - Kind quality — per "User requirements" target and "Quality bar" item: met / below (measured vs target, within or
   beyond the hard limit, why, the change that closes it or "no change expected to help") / not built yet (what, which
-  planned component). Then simplifications (code traced to no spec entry, fixed class or acceptance test;
+  planned component). Judged items by their stance: beat / match → run ours and the reference through the same
+  scenario, say which is better or "tie" and the single biggest gap; differ → is ours distinct on each identity axis, and not
+  worse on each floor axis; criterion → against the criterion. Then simplifications (code traced to no spec entry, fixed class or acceptance test;
   duplication; handling of failures outside the failure model), each with the tests showing it is safe. No concern
   ids, severities or assumption verdicts. First line: the gap that most blocks the bar.
 
