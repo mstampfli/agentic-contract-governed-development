@@ -27,7 +27,7 @@ Ask the user: no
 The spec is `INTERFACES.md` (binding; drafts under review are in `INTERFACES.proposed.md` — never implement them).
 Ledgers: `QUESTIONS.md`, `ASSUMPTIONS.md`. Review and red-team probes: `tests_review/`. Concern catalog: `concerns.md`.
 Live status (decisions open to steer, green state, quality-bar measurements, open questions, what is running, the
-acceptance-test path): `STATUS.md`.
+acceptance-test path): `STATUS.md` (reviewers and red teamers don't read it).
 Process: the acgd skill at `<skill dir>` (SKILL.md; prompts from templates/*_brief.md; checks
 `python3 <skill dir>/spec_check.py all INTERFACES.md ASSUMPTIONS.md` and `python3 <skill dir>/verify_citations.py .`).
 
@@ -38,7 +38,8 @@ brief(B+'writer_brief.md','''Your role: writer <ID>. Project root: <absolute pro
 Read INTERFACES.md fully, then the existing code of every module you depend on.
 Task: <files / what to build or fix>. Project specifics: <language, allowed libraries, style, test runner — or "none">.
 [Owner's calls:] Details left to you, decide each and record it as your ASSUMPTION: <list>.
-[Fix task:] Findings to fix, each with its class: <list>.
+[Fix task:] Findings to fix, each with its class and severity (break / gap / violation): <list>.
+[Comments to fix:] Comments misstating the code or a contract, in your files: <list>.
 [Quality task:] Quality-bar items below target (measured vs target; judged: stance and the single biggest gap) and accepted simplifications: <list>.
 <!-- Orchestrator (delete this comment before sending): fill the header lines only; delete bracketed lines that do not
      apply and drop the brackets on the ones you keep ("[Fix task:]" → "Fix task:"); keep the rules below verbatim. To resume a writer after its question is answered, don't send this brief again: send
@@ -57,22 +58,26 @@ Scope for your kind:
   ACCEPTED ASSUMPTION not marked amended (search the ledger for every topic the draft touches; the mark checker only
   verifies named entries), anything that weakens an item of "User requirements", correctness under the failure
   model, anything two modules could implement differently,
-  and a new mechanism (added code paths) that names no failure-model item or cost.
+  a new mechanism (added code paths) that names no failure-model item or cost, and any violation (All roles: e.g. one
+  rule defined in two entries, an unregistered cross-module convention). [Decide: <finding — the reason it is
+  disputed>; your verdict stands.]
 - module <module id>: the module's code, what it calls, what calls it. [Re-review: previous findings <list>; diff:
   `diff -ru <snapshot dir> <module files>`.] Check every registry entry it owns (exact implementation, owned codecs on
   edge cases) and consumes (calls the owner, relies only on real behaviour), its failure contracts (inject the
   failure), and whether a fix broke anything else (after a simplification: nothing removed was needed by a spec
   entry, class test or acceptance test). [Solo: the writer wrote the acceptance tests and measurement scripts at
   <path> — check that no code special-cases them.] [Brownfield: existing code without `Cite:` lines is not a
-  finding.]
+  finding.] [Decide: <finding — the reason it is disputed>; your verdict stands.] [Moved copy (brownfield): instead
+  of the checks above, review only `diff -ru <snapshot dir> <files>` — the copy moved to its one home; a break, gap or
+  violation you see elsewhere → report it; anything else outside the diff → not your task.]
 - seam <A-B>: [Re-review: previous findings <list>; diff: `diff -ru <snapshot dir> <files>`.] the code on BOTH sides; run them together; inject failures across the seam; what does each side believe
-  afterwards?
+  afterwards? [Decide: <finding — the reason it is disputed>; your verdict stands.]
 - quality <component or T<n>>: [Re-review: previous findings <list>.] the spec's "User requirements" and "Quality bar" sections, <measurement commands>, <acceptance tests path>,
   <reference system and how to run it, or the path of its collected material, or "none">. Run every measured item (and on the reference system where runnable); judge every judged item
   by using the public interface as a user would. Report each item: met / below (by how much — within or beyond its
   hard limit —, why, the change that closes it, or "no change expected to help") / not built yet (what is missing and which planned component would provide it). Then simplifications:
-  code traced to no spec entry, fixed class or acceptance test; duplication; handling of failures outside the failure
-  model — each with the tests that show removing or merging it is safe.
+  code traced to no spec entry, fixed class or acceptance test; handling of failures outside the failure model — each
+  with the tests that show removing or merging it is safe.
 <!-- Orchestrator (delete this comment before sending): fill the header lines and the scope line only (the same placeholders appear in the rules — leave those), keep
      only the scope line of this reviewer's kind, drop the [..] brackets on kept parts, delete bracketed parts that do
      not apply; keep the rules below verbatim. -->

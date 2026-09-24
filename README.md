@@ -2,7 +2,8 @@
 
 **Contract-governed delivery for teams of AI coding agents**
 
-> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield start and solo (Mode 2) steps, judged-item stances) are
+> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield start and
+> solo (Mode 2) steps, judged-item stances, finding severities with the duplication rule and the loop stop rule) are
 > validated in simulations only, not yet in a real multi-agent build.
 
 > *Align every contributor — human or AI agent — to a single source of truth, verify every boundary independently,
@@ -27,6 +28,8 @@ Cross-module defects are **structural**, so ACGD remediates them structurally:
 | The specification covers only what its author anticipated | **Discovery Pipeline** — blind counter-specifications, operational traces, reference-system benchmarking, adversarial red-teaming |
 | Builders optimise for the grader; orchestrators trust self-reports | **Independent Verification** — fresh reviewers every round; the orchestrator executes every check itself |
 | Defects are fixed one instance at a time | **Class-Level Remediation** with permanent regression class tests |
+| The same job is implemented twice and the copies drift | **One Home per Job** — duplication is a blocking violation, judged by job, not by looks |
+| Review loops spend rounds on non-issues (seen in a real run: ~15 spec-review rounds) | **Finding Severities and a Stop Rule** — only what blocks green starts a round |
 | Reviews only add code; "correct" is mistaken for "good" | **Quality Bar** — measured continuously, judged at every checkpoint, with a simplification pass |
 
 ## Capability overview
@@ -40,6 +43,14 @@ Cross-module defects are **structural**, so ACGD remediates them structurally:
   canonical rules source, verbatim copies, machine-verified.
 - **Checkpoint Loops per Component** — no global phase gate: a component is *green* when a full round of fresh reviews
   passes; red-team and quality loops run at every green checkpoint and end by convergence, never by a round cap.
+- **Finding Severities** — break (wrong behaviour), gap (a case inside the failure model nothing handles), violation
+  (a closed list of broken rules that drift even while behaviour is correct today: duplication, owner-rule breaches,
+  unrecorded cross-module assumptions, unregistered conventions, missing required tests) block green; smells, nits and
+  misstating comments never do and never start a round. A review round that finds nothing blocking green ends its
+  loop; trivial changes (no behaviour, no registered entry) get mechanical checks only.
+- **One Home per Job** — a check, constant, parser or whole mechanism is implemented once; a writer searches before
+  writing and registers what several modules need. "Same job" = changing the rule for one would require changing the
+  other; genuinely different jobs are never forced into a shared helper.
 - **Human-in-Command, Never Required** — a single `Ask the user: yes|no` switch. `no`: the loop decides, logs every
   ask-point decision under *Decisions open to steer*, and never waits. The user's instruction always overrides, effective at the
   next step.

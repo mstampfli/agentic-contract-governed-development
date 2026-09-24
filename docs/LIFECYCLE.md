@@ -29,6 +29,11 @@ A summary of the operating model. The normative text is [`skill/SKILL.md`](../sk
 Writer → mechanical gates (tests, citations, `spec_check all`, scope) → fresh module review → fresh seam reviews →
 class-level fixes + a sweep for similar problems → repeat until a **full round** finds the component **green**.
 
+Green = no break, no gap inside the failure model, no violation (duplication, owner-rule breach, unrecorded
+cross-module assumption, unregistered convention, missing required test, a stand-in past its time). Smells, nits and
+misstating comments never block and never start a round; comments are tracked and fixed with the module's next writer
+run. A round that finds nothing blocking green ends the loop.
+
 ## Phase 3 — Checkpoint loops
 - **Red team** on the smallest runnable composite, then every larger one; fresh red teamer per round; ends when no new
   defect class appears.
@@ -60,3 +65,4 @@ checkpoint of the initial build, later once a feature is whole.
 | Human in command | `Ask the user: yes\|no`; *Decisions open to steer*; overrides at the next step |
 | Independent verification | fresh agents, orchestrator-run gates, never self-reports |
 | Continuous improvement | every orchestrator mistake → root cause → process change |
+| Loop economy | severities decide what blocks; nits / smells / comments never start a round; disputes decided once by someone who didn't write the code |
