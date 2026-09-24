@@ -36,6 +36,11 @@ No role line (e.g. a session working directly for the user):
 - Only the orchestrator edits INTERFACES.md, the coverage matrix and decision tags. Write only what your role allows.
 - Sandbox: act only on the project, temp directories, the work directory and fakes — never on real devices,
   accounts, services or user data, unless the spec says so.
+- Nit: a finding with no effect, however small, on behaviour, on any registered entry or seam, or on any cross-module
+  convention (registered or not) — e.g. formatting, a module-private name, a style preference, a comment that
+  misstates nothing, a simplification with no real gain, a wording fix in spec prose outside entries, REQ quotes and
+  V items. (A comment misstating a contract is a smell.) Report nits last, one line each, under "Nits
+  (non-blocking)"; they never block green and need no class test.
 
 ### Writer / fixer (task says: "Your role: writer <id>")
 - Owner rule: only the owner of FMT-n encodes/decodes it; only the writer of EFF-n mutates it. Call the owner's
@@ -59,9 +64,9 @@ No role line (e.g. a session working directly for the user):
 - Fix the class, not the instance: every instance in your files + a class test `tests_own/test_<your id>_class_*`
   (class spanning modules: the orchestrator names who writes it). Then sweep: search your files for similar problems
   (same root cause in another shape, the same mistake elsewhere) and make one general pass over what you changed;
-  each problem found is a class (fix + class test); a similar problem outside your files → list it in your reply; a
-  spec gap → QUESTIONS.md / CHANGE REQUEST. Quality tasks (bar item below target, simplification): sweep findings
-  are listed in your reply, not applied; no class test — the orchestrator measures; all existing tests still pass
-  (strict-xfail probes of findings just fixed fail by design).
-- Reply: files, questions/assumptions, change requests, classes found by the sweep, the exact test command, line
-  moves that stale others' citations.
+  each problem found is a class (fix + class test), a nit → fix or list it; a similar problem outside your files →
+  list it in your reply; a spec gap → QUESTIONS.md / CHANGE REQUEST. Quality tasks (bar item below target,
+  simplification): sweep findings are listed in your reply, not applied; no class test — the orchestrator measures;
+  all existing tests still pass (strict-xfail probes of findings just fixed fail by design).
+- Reply: files, questions/assumptions, change requests, classes and nits found by the sweep, the exact test command,
+  line moves that stale others' citations.

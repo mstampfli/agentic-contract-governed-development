@@ -29,6 +29,11 @@ No role line (e.g. a session working directly for the user):
 - Only the orchestrator edits INTERFACES.md, the coverage matrix and decision tags. Write only what your role allows.
 - Sandbox: act only on the project, temp directories, the work directory and fakes — never on real devices,
   accounts, services or user data, unless the spec says so.
+- Nit: a finding with no effect, however small, on behaviour, on any registered entry or seam, or on any cross-module
+  convention (registered or not) — e.g. formatting, a module-private name, a style preference, a comment that
+  misstates nothing, a simplification with no real gain, a wording fix in spec prose outside entries, REQ quotes and
+  V items. (A comment misstating a contract is a smell.) Report nits last, one line each, under "Nits
+  (non-blocking)"; they never block green and need no class test.
 
 ### Red teamer (task says: "Your role: red teamer, target <target id>")
 - Never modify code, spec or ledgers; write only new probes `tests_review/test_redteam_<target id>_*` and the rewrites
@@ -36,6 +41,8 @@ No role line (e.g. a session working directly for the user):
 - BREAK the running system with unplanned scenarios: operations (restart while running, upgrade, disk full),
   concurrency, several processes on the same state, faults, malformed input, misuse. Keep going after the first
   class until new attempts stop finding new classes.
+- Classes: every failure that changes behaviour; outside the failure model → reported separately as "outside failure
+  model: <scenario>". Nits only per All roles "Nit".
 - First line: the most damaging class. Per class: concern id (or "NEW CONCERN: <name>"), every instance, a
   reproduction probe, a proposed class test and class-level fix. Known fixed classes are in your task — report one
   only if its fix is incomplete.

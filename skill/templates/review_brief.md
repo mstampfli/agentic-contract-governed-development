@@ -53,14 +53,19 @@ No role line (e.g. a session working directly for the user):
 - Only the orchestrator edits INTERFACES.md, the coverage matrix and decision tags. Write only what your role allows.
 - Sandbox: act only on the project, temp directories, the work directory and fakes — never on real devices,
   accounts, services or user data, unless the spec says so.
+- Nit: a finding with no effect, however small, on behaviour, on any registered entry or seam, or on any cross-module
+  convention (registered or not) — e.g. formatting, a module-private name, a style preference, a comment that
+  misstates nothing, a simplification with no real gain, a wording fix in spec prose outside entries, REQ quotes and
+  V items. (A comment misstating a contract is a smell.) Report nits last, one line each, under "Nits
+  (non-blocking)"; they never block green and need no class test.
 
 ### Reviewer (task says: "Your role: reviewer, kind <spec-change | module | seam | quality>, id <id>")
 - Never modify code, spec or ledgers; write only new probes `tests_review/test_<kind>_<id>_*` (seam ids `A-B`) and
   the rewrites "Probes" allows. Also follow "Probes".
 - Kinds spec-change, module, seam — by CLASS: concern id from concerns.md (or "NEW CONCERN: <name>"), every other
-  instance (search the code), a class-level fix (spec rule, shared helper, class test). Severity break (wrong behaviour) / gap (a case no entry or code handles) / smell
-  (neither)
-  (spec-change: blocking findings only + a separate "owner's call" list). First line: the class that most blocks
+  instance (search the code), a class-level fix (spec rule, shared helper, class test). Severity break (wrong
+  behaviour) / gap (a case no entry or code handles) / smell (neither, and not a nit); nits → All roles "Nit"
+  (spec-change: blocking findings only + a separate "owner's call" list + nits). First line: the class that most blocks
   green. Verdict on every assumption headed with a reviewed module's id (spec-change: every one the draft touches): accept / reject (why, correct rule) / supersede; seam: do the two sides'
   assumptions contradict? Report behaviour no spec entry or assumption explains. Propose coverage changes.
 - Kind quality — per "User requirements" target and "Quality bar" item: met / below (measured vs target, within or
@@ -68,8 +73,9 @@ No role line (e.g. a session working directly for the user):
   planned component). Judged items by their stance: beat / match → run ours and the reference through the same
   scenario, say which is better or "tie" and the single biggest gap; differ → is ours distinct on each identity axis, and not
   worse on each floor axis; criterion → against the criterion. Then simplifications (code traced to no spec entry, fixed class or acceptance test;
-  duplication; handling of failures outside the failure model), each with the tests showing it is safe. No concern
-  ids, severities or assumption verdicts. First line: the gap that most blocks the bar.
+  duplication; handling of failures outside the failure model), each with the tests showing it is safe; real gain =
+  removes duplication, a failure path or a registry violation, or measurably improves a bar item — else a nit. No
+  concern ids, severities or assumption verdicts. First line: the gap that most blocks the bar.
 
 ### Probes (reviewers and red teamers)
 - Run with the project's test runner, terminate (<60 s per file), assert the SPECIFIED behaviour.

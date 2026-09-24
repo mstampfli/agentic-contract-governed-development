@@ -88,10 +88,14 @@ counter-specifiers and researchers are fresh agents in every mode.
 * **Full round** (per component): fresh module review of each module + fresh seam review of each touching seam whose
   other side exists (`ext↔A`: covered by A's module review + red team).
 * **Green** — after a full round:
-  * no break, no cross-module gap inside the failure model (smells never block);
+  * no break, no cross-module gap inside the failure model (smells and nits never block);
   * no failing acceptance test that exercises it;
   * every owner's call decided; every coverage cell of its existing seams decided (planned seams may stay `open`);
   * no missing ACK; no unanswered question of its writers.
+* **Nit**: rules.md → All roles. **Trivial change**: changes no behaviour, touches no registered entry, seam or
+  cross-module convention, and deletes or merges no code (comments, log wording, formatting, a module-private
+  rename, project docs — not the spec) — e.g. most nit fixes. Judged by the orchestrator from the diff, never from the
+  writer's reply; in doubt → not trivial.
 * **Owner's call**: single-module detail a spec-change review marks non-blocking → writer prompt's "Owner's calls:"
   line → writer decides, records `ASSUMPTION-<id>-<n>`; decided when that is.
 * **Target** `T<n>`: runnable composite of green components red-teamed; scope map lists components + start commands.
@@ -175,7 +179,8 @@ helpers, R1 formats, R2 state, R3 calls, R4 failure contracts, coverage, traces,
     new row alone → `Adds:`;
   * items `V<k>-<n>` are never rewritten; a later one supersedes them; only edit: append "(superseded by V<k>-<n>)";
   * `spec_check.py marks` checks named entries; the reviewer finds unnamed ones, incl. accepted assumptions.
-* **Tiers**: bookkeeping (verbatim acceptance, marks, new requirement quote, changelog, rules-copy refresh; existing
+* **Tiers**: bookkeeping (verbatim acceptance, marks, new requirement quote, changelog, rules-copy refresh, nit fixes
+  in prose outside entries, REQ quotes and V items; existing
   codebase: scope-map additions, the user's scope override) → mechanical checks; semantic
   → fresh spec-change reviewer. Merge criterion: no contradiction, correct under the failure model, nothing two modules
   could implement differently, no user requirement weakened.
@@ -265,7 +270,7 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
      (add-on: next `## V<k>`, reviewed as a spec change).
 2. **Build loop** (a component starts once its dependencies are green; independent ones in parallel): writer →
    mechanical checks → fresh module review → seam reviews of changed seams → fixes by class → repeat until a full
-   round finds it green.
+   round finds it green (trivial changes: Reviews → "When").
 3. **Checkpoint loops** (both start at the same checkpoints, in parallel):
    **Red team**:
    * where: component + its dependencies green → smallest runnable composite containing it (not runnable alone →
@@ -301,18 +306,21 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
    * then phases 2–3 (Mode 2: its steps 2–7 instead).
 
 ## Reviews (`review_brief.md`: spec-change / module / seam / quality; `redteam_brief.md`)
-* Always a **fresh** agent (authors and earlier reviewers are anchored). Re-review: previous findings as checklist +
+* Always a **fresh** agent (authors and earlier reviewers are anchored). Re-review: previous findings (not nits) as
+  checklist +
   real diff (git, or the pre-run snapshot, `diff -ru`); reviews from scratch incl. regressions.
 * **Sweep before re-review** (every review kind and red-team round, both modes): after a round's findings the fixer
   fixes each class, searches its own work for similar problems (same root cause in another shape, the same mistake
   elsewhere) and makes one general pass over what it changed — then a fresh reviewer. Writer: its own files (rules.md
-  → Writer / fixer); what it lists elsewhere → the orchestrator routes each to its owner as a finding; listed quality
+  → Writer / fixer); what it lists elsewhere → the orchestrator routes each to its owner as a finding (nits: Standing
+  rules); listed quality
   items → judged by the next quality round. Orchestrator: the spec ("Re-read before re-review").
 * Output: spec-change / module / seam by class (concern id, all instances, class fix, assumption verdicts); quality per
   bar item + simplifications. First line: what most blocks green / the bar. Formats and probe rules: rules.md.
 * When: module review after every semantic module change — a simplification (deleted or merged code) always counts,
   and its reviewer checks that nothing removed was needed by a spec entry, class test or acceptance test; seam review when a side changes meaning; spec-change review
-  per semantic amendment; red team + quality per green checkpoint; comment-only changes → mechanical checks.
+  per semantic amendment; red team + quality per green checkpoint; trivial changes (Terms) → mechanical checks, no
+  fresh review (green stays).
 
 ## Orchestrator duties (never trust self-reports)
 **Before spawning**: save the prompt (`prompts/`; before setup `<work dir>/prompts/`), run `spec_check.py rules` on it
@@ -343,6 +351,11 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
   change / redesign).
 * Nothing others depend on stays a "known issue"; only local non-correctness items, approved by the orchestrator and
   listed in "Decisions open to steer".
+* A round that finds no break / gap (spec-change: no blocking finding) ends that loop (observed: ~15 spec-review
+  rounds spent on non-issues in a real run). Smells and nits never start a round: fix them with the next real fix round, list or drop them; a nit-only fix is at most a trivial change
+  (mechanical checks only, green stays) — never a known issue, never "same finding again".
+* "Outside failure model" reports (red team) → extend the failure model (semantic amendment; then a class like any
+  other) or record `out: <reason>` in coverage (no cell → changelog line "not adopted: <reason>").
 * Every orchestrator mistake → root cause + process change in `PROCESS.md`; general ones (process fixes, new concern
   kinds) also into this skill — **skill updates** (not writable → `PROCESS.md` "skill updates" + tell the user). Most
   tools here came from one.
@@ -406,8 +419,8 @@ not-yet-conforming component they depend on; each later change adds its own. The
 builder when a fix stalls, Standing rules):
 1. Classify: adds a module or seam → phase 4's first three bullets (the draft merges in step 4), then steps 2–7;
    new/changed entry on existing seams (incl. pinning an entry after a switch from Mode 1) → steps 2–7 with the
-   amendment in step 4; code only → steps 2–7, no semantic amendment. Existing codebase: baseline round first
-   ("Start: existing codebase").
+   amendment in step 4; code only → steps 2–7, no semantic amendment; trivial (Terms) → steps 2, 5 and the
+   mechanical checks only. Existing codebase: baseline round first ("Start: existing codebase").
 2. Per module id the change writes: save a one-line `prompts/writer_<id>_r<N>.txt` describing the change (N = next
    free number for that id); snapshot / commit the modules (reviewers need a diff; skip if no code yet); `touch <work
    dir>/stamp_<id>_r<N>` (scope-breach check: the change's modules together).
@@ -418,7 +431,7 @@ builder when a fix stalls, Standing rules):
 5. Code, owner first; tests: contract test per consumer that can't import the owner's codec, failure-injection test
    per new R4 row, class test per fixed class.
 6. Orchestrator duties checklist; fresh module review per semantically changed module (a simplification counts;
-   comment-only → mechanical; plus the special-casing check, Terms → "Acceptance tests"), seam review per changed
+   trivial → mechanical; plus the special-casing check, Terms → "Acceptance tests"), seam review per changed
    seam. Findings → fixes by class + sweep, then steps 2, 4 (if a fix
    needs an amendment), 5, 6 again (a new snapshot, so each re-review diff shows the fixes) with fresh reviewers
    until a full round finds each touched component green; same finding again → fresh builder, then spec change /
