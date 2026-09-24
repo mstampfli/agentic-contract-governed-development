@@ -62,7 +62,9 @@ Scope for your kind:
   `diff -ru <snapshot dir> <module files>`.] Check every registry entry it owns (exact implementation, owned codecs on
   edge cases) and consumes (calls the owner, relies only on real behaviour), its failure contracts (inject the
   failure), and whether a fix broke anything else (after a simplification: nothing removed was needed by a spec
-  entry, class test or acceptance test).
+  entry, class test or acceptance test). [Solo: the writer wrote the acceptance tests and measurement scripts at
+  <path> — check that no code special-cases them.] [Brownfield: existing code without `Cite:` lines is not a
+  finding.]
 - seam <A-B>: [Re-review: previous findings <list>; diff: `diff -ru <snapshot dir> <files>`.] the code on BOTH sides; run them together; inject failures across the seam; what does each side believe
   afterwards?
 - quality <component or T<n>>: [Re-review: previous findings <list>.] the spec's "User requirements" and "Quality bar" sections, <measurement commands>, <acceptance tests path>,

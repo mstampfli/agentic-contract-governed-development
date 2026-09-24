@@ -237,7 +237,7 @@ def test_citations(tmp_path):
 
 def test_citations_skips_history_and_venvs(tmp_path):
     for f in ('ASSUMPTIONS.md', 'QUESTIONS.md', 'PROCESS.md', 'STATUS.md', 'prompts/x.md', 'snapshots/s/y.py',
-              'env/z.py', '.venv/q.py'):
+              'env/z.py', '.venv/q.py', 'target/doc/src/x.rs.html'):  # nds: rustdoc HTML of cited comments
         w(tmp_path, f, '# Cite: nowhere.py:1 "x"\n')
     w(tmp_path, 'env/pyvenv.cfg', '')
     assert run(tmp_path, '.', script='verify_citations.py')[0] == 0

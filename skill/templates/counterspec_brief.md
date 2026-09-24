@@ -7,5 +7,5 @@ every data format that crosses a boundary (byte-level where bytes matter, limits
 state with its single writer and process exclusivity, failure contracts for every state-changing call (what state is
 guaranteed after each kind of failure, what the caller is told), and end-to-end traces for normal use AND operations
 (install, first start, restart while still running, upgrade, overload, disk full, misuse). Where a similar real system
-exists, say what it does and why. List the open questions you could not decide. Do not read other files.
+exists, say what it does and why. Mark every fact about real hardware or real systems you state from memory UNVERIFIED. List the open questions you could not decide. Do not read other files.
 Write the spec to <~/.acgd/<project>/counterspec_<A|B>_r<N>.md (absolute path)>. Reply with a ≤100-word summary of the decisions you think others are most likely to miss.

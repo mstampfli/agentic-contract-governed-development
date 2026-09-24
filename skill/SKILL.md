@@ -1,6 +1,6 @@
 ---
 name: acgd
-description: Keep a multi-module codebase consistent across modules and across writers (several agents, or one agent over a long task). Use when modules exchange data, share persisted state, or depend on each other's failure behavior — greenfield parallel builds, extending a built system, and ongoing work in an existing codebase.
+description: Keep a multi-module codebase consistent across modules and across writers — several writer agents in parallel (Mode 1) or one agent writing alone (Mode 2, solo), on a new project or an existing codebase. Use when modules exchange data, share persisted state, or depend on each other's failure behavior — greenfield builds, extending a built system, and ongoing work in an existing codebase.
 ---
 
 # ACGD — Agentic Contract-Governed Development
@@ -19,8 +19,8 @@ description: Keep a multi-module codebase consistent across modules and across w
 
 Evidence (A/B runs, blind audits, acceptance tests hidden from writers): tinykv formats/ownership disagreements ~7 → ~2;
 tinyq 15/17 vs 17/17 acceptance, every cross-module break of the plain build absent, high-severity consistency
-findings 6→3 / 5→2; unregistered conventions still drifted. Cost ≈ 20× tokens (bookkeeping slips, an out-of-scope edge
-case → tiers, batching, "question scope").
+findings 6→3 / 5→2; unregistered conventions still drifted. Cost: much larger token usage than a plain build
+(bookkeeping slips, an out-of-scope edge case → tiers, batching, "question scope").
 
 ## The user: authoritative, never needed
 * **Overrides** spec, plan, any decision; applied at the next step (amendment or process change):
@@ -35,8 +35,36 @@ case → tiers, batching, "question scope").
   asks at the ask-points, waiting only for that item. Ask-points and exact rule — one place only: `rules.md` →
   Orchestrator → "Decisions and the user".
 
+## Pick a mode
+Two choices: where you start (new project / existing codebase) and who writes the code. Reviewers, red teamers,
+counter-specifiers and researchers are fresh agents in every mode.
+
+| | New project | Existing codebase |
+|---|---|---|
+| **Mode 1** — several writers: you orchestrate, writer agents build components in parallel | Phases 1 → 2 → 3 (done); phase 4 per add-on | "Start: existing codebase"; per add-on: baseline round → phase 4 |
+| **Mode 2** — solo: this session orchestrates and writes the code, one change at a time | Phase 1 → "Each change" per component | "Start: existing codebase" → "Each change" |
+
+* **Mode 1** only when ≥2 components can be built at the same time (their dependencies green) and each is large or
+  complex enough that parallel writing saves real time. Otherwise **Mode 2**: work that comes one change at a time
+  (bug fixes, a feature along one dependency chain), a small or simple system (few components, few seams, little
+  shared state), or unsure. The evidence above comes from Mode 1 builds; Mode 2 is not yet measured. Switch any time
+  on the same spec.
+* **Already set up** (`STATUS.md` exists; it records mode and start): continue where it says — unfinished work in its
+  phase / step; new work → Mode 1 phase 4 (existing codebase: baseline round first), Mode 2 "Each change". No mode
+  recorded (set up before modes existed): start = new project if the work directory holds counter-specs, else
+  existing codebase; mode by the routing above (this session writing the code = Mode 2); record both in `STATUS.md`.
+  A mode switch updates `STATUS.md`. Skill rules changed since setup (`spec_check.py rules` reports differing
+  sections) → re-copy `rules.md` into INTERFACES.md (bookkeeping amendment), AGENTS.md and saved `prompts/*.md`
+  (headers stay). Agents of an earlier session are gone: an unfinished writer
+  item goes to a fresh builder (Mode 2: this session) on the current code, counted as the same writer (Standing
+  rules); the snapshot from before the item stays the review diff base, the new run gets its own stamp; reviews
+  re-spawn fresh.
+* "Phases" is written for Mode 1. Mode 2 uses phase 1, phase 3's checkpoint loops and phase 4's first three bullets
+  (specify, reopen, re-decide); there, "via the build loop" means "Each change" steps 2–6.
+
 ## Terms
-* **Module**: unit with its own writer; module table row = id, files, Depends-on.
+* **Module**: unit with its own writer (Mode 2: one writer for all; ids stay per module — they name ownership in
+  ledgers, ACKs and assumptions); module table row = id, files, Depends-on.
   * Id: letter, then letters/digits/`_` (no hyphens — ids sit in `ASSUMPTION-<id>-<n>`).
   * Every root file belongs to one row (user config/data included), except process files (`INTERFACES*.md`, ledgers,
     `STATUS.md`, `PROCESS.md`, `concerns.md`, `AGENTS.md`/`CLAUDE.md`, `prompts/`, `snapshots/`, `tests_review/`, `tests/acceptance/`) and
@@ -80,8 +108,9 @@ case → tiers, batching, "question scope").
 * **Acceptance tests**: end-to-end, public interface, written by the orchestrator, kept with the measurement scripts
   in the **work directory** `~/.acgd/<project>/acceptance/` (path in `STATUS.md`, so a later session finds
   it). Hidden from writers only while the components they exercise are being built (writers game visible tests —
-  observed); once those components are green, the orchestrator moves the tests into the project's
-  `tests/acceptance/` as regular regression tests (writers may run them, never edit them). Tests for new features or
+  observed; Mode 2: the solo writer writes them and the measurement scripts, so its module reviewers check that no
+  code special-cases them instead); once those components are green, the orchestrator moves the tests into the
+  project's `tests/acceptance/` as regular regression tests (writers may run them, never edit them). Tests for new features or
   add-ons start hidden again.
   Run once every component they exercise is green, and at every later checkpoint. External services: tested against
   fakes; a feature on one is done when it passes against fakes; a real-service check is a decision. The
@@ -105,9 +134,10 @@ case → tiers, batching, "question scope").
   * "None beyond green" is a valid recorded decision. Writers see the bar in words; scripts stay hidden; results →
     `STATUS.md`.
 * **Decisions vs status**: spec = decisions (entries, requirements, scope, targets, bar, coverage), changed only by
-  amendment. `STATUS.md` = progress, rewritten in place: "Decisions open to steer" first; per-component progress /
-  green; red-team rounds; bar measurements + history; quality gaps and reported misses; open questions; open coverage
-  count; what is running; work directory path.
+  amendment. `STATUS.md` = progress, rewritten in place: "Decisions open to steer" first; mode and start (new /
+  existing codebase); per-component progress / green; red-team rounds; bar measurements + history; quality gaps and
+  reported misses; open questions; open coverage count; not-yet-conforming components (existing codebase); what is
+  running; work directory path.
 * **Done** (current scope): all components green; red-team loops converged; acceptance tests pass; every bar item met
   or a reported miss (within its hard limit).
 
@@ -130,8 +160,8 @@ helpers, R1 formats, R2 state, R3 calls, R4 failure contracts, coverage, traces,
   ones → project copy AND skill copy of `concerns.md`, so the next project checks it from day one (skill updates).
 * **Register before crossing a boundary**; registries complete at every point, not before coding. Pin early only
   between parallel writers who can't read each other's code — the registry is their only shared truth (pin R1
-  byte-level + limits, R2, R3, R4); otherwise
-  the producer's code is the truth (register owner + pointer).
+  byte-level + limits, R2, R3, R4), and always in Mode 2 (Mode 2 → "Pinning"); otherwise the producer's code is the
+  truth (register owner + pointer).
 
 ### Changing the spec
 * Drafts only in `INTERFACES.proposed.md`; writers read only the merged spec (observed: a draft in the real spec got
@@ -145,10 +175,14 @@ helpers, R1 formats, R2 state, R3 calls, R4 failure contracts, coverage, traces,
     new row alone → `Adds:`;
   * items `V<k>-<n>` are never rewritten; a later one supersedes them; only edit: append "(superseded by V<k>-<n>)";
   * `spec_check.py marks` checks named entries; the reviewer finds unnamed ones, incl. accepted assumptions.
-* **Tiers**: bookkeeping (verbatim acceptance, marks, new requirement quote, changelog) → mechanical checks; semantic
+* **Tiers**: bookkeeping (verbatim acceptance, marks, new requirement quote, changelog, rules-copy refresh; existing
+  codebase: scope-map additions, the user's scope override) → mechanical checks; semantic
   → fresh spec-change reviewer. Merge criterion: no contradiction, correct under the failure model, nothing two modules
   could implement differently, no user requirement weakened.
 * **Batch** a round's findings: one amendment, one fix round per module.
+* **Re-read before re-review**: after fixing a review round's findings, re-read the whole spec (not only the edited
+  lines), check each edit in context and grep for restatements of every touched rule; then the fresh re-review
+  (observed: fast targeted patches re-broke other entries, and review rounds stopped converging).
 * **Consolidate, don't layer** (interacting amendments in one area → one entry):
   * replaced amendment heading tagged "(superseded by V<k>)" = its mark (`all` skips its marks and ACKs); partly
     replaced → restate its live items in the new amendment (not in `Touches:`), then tag the heading only (the
@@ -197,13 +231,15 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 * **Subagents** get CLAUDE.md only lazily (after reading a file there) → the prompt copy is mandatory; put the absolute
   project root in every prompt (cwd may be reset).
 * **Writers** never get review / red-team prompts (`prompts/` off limits), hidden acceptance tests or measurement scripts; user
-  requirements and the bar are requirements for them, not hidden grading.
+  requirements and the bar are requirements for them, not hidden grading (Mode 2: Terms → "Acceptance tests").
 
 ## Phases (Mode 1: several agents; per component, no global phase)
 1. **Discover** (initial system and every add-on), in order:
    * create the work directory `~/.acgd/<project>/` (`<project>` = the project root's directory name). Two fresh agents write **blind counter-specs** there (`counterspec_brief.md`) from the
      user's request verbatim incl. future plans (add-on: its request — for a planned feature the original words
-     about it — + a summary of the existing external interface). No failure model or draft from you, so they cannot inherit your blind spots. Prompts: before
+     about it — + a summary of the existing external interface). No failure model, draft or research from you, so they cannot inherit your blind spots
+     (research is the later gap check, not their input); every fact they state from memory is unverified until a
+     researcher or the primary source confirms it. Prompts: before
      setup in `<work dir>/prompts/`, copied into `prompts/` at setup; add-on: straight into `prompts/`, next `r<N>`.
      Your own draft in parallel, in the work directory;
    * **setup** after both: copy `concerns.md`; create `QUESTIONS.md`, `ASSUMPTIONS.md`, `PROCESS.md` (orchestrator
@@ -267,6 +303,11 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 ## Reviews (`review_brief.md`: spec-change / module / seam / quality; `redteam_brief.md`)
 * Always a **fresh** agent (authors and earlier reviewers are anchored). Re-review: previous findings as checklist +
   real diff (git, or the pre-run snapshot, `diff -ru`); reviews from scratch incl. regressions.
+* **Sweep before re-review** (every review kind and red-team round, both modes): after a round's findings the fixer
+  fixes each class, searches its own work for similar problems (same root cause in another shape, the same mistake
+  elsewhere) and makes one general pass over what it changed — then a fresh reviewer. Writer: its own files (rules.md
+  → Writer / fixer); what it lists elsewhere → the orchestrator routes each to its owner as a finding; listed quality
+  items → judged by the next quality round. Orchestrator: the spec ("Re-read before re-review").
 * Output: spec-change / module / seam by class (concern id, all instances, class fix, assumption verdicts); quality per
   bar item + simplifications. First line: what most blocks green / the bar. Formats and probe rules: rules.md.
 * When: module review after every semantic module change — a simplification (deleted or merged code) always counts,
@@ -308,27 +349,87 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 * Isolate parallel writers only while the other side doesn't exist; every forced stand-in / duplicate gets a
   follow-up.
 
-## Mode 2 — Ongoing work in an existing codebase
-**Setup** (once): short INTERFACES.md — rules, failure model, user requirements, module table (id, files, Depends-on,
-incl. `PROJ`), formats, state, calls, failure contracts, helpers (owner + pointer to code), scope map, coverage; both
-ledgers, `PROCESS.md`, `STATUS.md`, `concerns.md` copy, work directory, `prompts/`, `tests_own/`, `tests_review/`,
+## Start: existing codebase (brownfield)
+**Setup** (once, either mode): short INTERFACES.md registering what the code does today — rules, failure model, user
+requirements, module table (id, files, Depends-on, incl. `PROJ`), formats, state, calls, failure contracts, helpers
+(owner + pointer to code), scope map, coverage, quality bar for in-scope components (ask-point; "none beyond green"
+is valid; each scope addition adds its items, in that component's baseline amendment); both ledgers,
+`PROCESS.md`, `STATUS.md`, `concerns.md` copy, work directory, `prompts/`, `tests_own/`, `tests_review/`,
 `snapshots/`, PROJ test config; `AGENTS.md` + `CLAUDE.md` symlink with `<project>`, `<skill dir>` (absolute) filled
-(`all` flags unfilled ones).
+(`all` flags unfilled ones). Later phase 1 runs skip phase 1's setup step.
+* Draft in `INTERFACES.proposed.md` → spec-change review → fixes → fresh re-review until no blocking finding → merge
+  as V0 (no counter-specs: the code is the source).
+* Behaviour wrong under the failure model → register the correct rule, not the bug; its owner stays listed in
+  `STATUS.md` as "not yet conforming" until a baseline round fixes it.
+* `REQ-n`: the user's stated requirements for the system and the work at hand (none → none); acceptance tests per
+  change, like any new requirement.
+* Existing code has no `Cite:` lines — not a finding (new and changed code cites as usual).
 
-**Each change** (the session is orchestrator for decisions, spec and verification, writer for its code):
-1. Classify: adds a module or seam → phase 4's discovery, then steps 2–7 (this session writes the code); new/changed
-   entry on existing seams → steps 2–7 with the amendment in step 4; code only → steps 2–7, no semantic amendment.
-2. Save a one-line `prompts/writer_<id>_r<N>.txt` describing the change (N = next number for that id); snapshot /
-   commit the modules (reviewers need a diff); `touch <work dir>/stamp_<id>_r<N>` (scope-breach check).
-3. New user-visible behaviour or a new/changed requirement → quote as `REQ-n`; write / rewrite its acceptance test
-   first (never edit one to pass).
+**Scope** (scope map, Scope column): in scope = the components the work touches or calls directly, plus every
+not-yet-conforming component they depend on; each later change adds its own. The rest is "existing, unreviewed":
+* it counts as green wherever a rule needs a component green (dependencies, acceptance-test runs, targets, phase
+  4's start);
+* red team and quality stop at the smallest composite containing all in-scope components;
+* seam reviews toward it are part of a full round; a finding in it (review, red team, acceptance test, sweep
+  listing) brings it into scope: scope-map addition merged at once, then its baseline round, then the fix;
+* Done (Terms) covers in-scope components only; the Done report lists out-of-scope "not yet conforming" ones.
+* User override "check everything": every component in scope, recorded in the scope map with the user's words (not a
+  `REQ-n`); then a baseline round for every component, dependencies first, and phase 3's loops on the whole system;
+  Done over all components.
+
+**Baseline round** — a component's first full round, making existing code green before anything builds on it:
+* When: before the change is drafted, for each in-scope component not green yet, dependencies first (scope from the
+  request). Mode 1: before phase 4; Mode 2: after step 1's classification. A component the draft brings into scope →
+  its baseline round before the draft merges: the draft moves to `<work dir>/draft_<title>.md`, the baseline's
+  amendment goes through `INTERFACES.proposed.md` and merges, then the draft is re-applied and re-reviewed.
+* Against the merged spec, like any review. One semantic amendment (if needed): the orchestrator decides the open
+  coverage cells of the component's seams and its quality-bar items; Mode 2 also pins the entries the component owns, before its reviews
+  ("Pinning"). Open owner's calls the existing code answers → the orchestrator records them as
+  `ASSUMPTION-<id>-<n>` pointing at the code; the rest go to the first fix run (a run of their own if nothing else
+  needs fixing). The change's own new acceptance
+  tests don't count for baseline green.
+* How: snapshot `snapshots/<component>-<id>-r0/` (diff base); mechanical checks = "After every writer run" 1–5 with
+  the project's own test command; fresh module + seam reviews → fixes by class + sweep → repeat until green. Fixes
+  are normal writer runs (next free r<N>, prompt, snapshot, stamp, duties): Mode 1 → a fresh builder first, then
+  Standing rules; Mode 2 → this session (prompt as in "Each change" step 2).
+
+## Mode 2 — Solo: new project or existing codebase
+* **New project**: phase 1 (incl. its setup) → V0; then each component, dependencies first, as one change (a module
+  already in V0 is "code only", unless an entry is missing or wrong).
+* **Existing codebase**: "Start: existing codebase", then per change.
+* **Pinning** (all registries as for parallel writers — R1 byte-level + limits, R2, R3, R4; after a context
+  compaction or in a later session the writer is effectively a new agent that no longer remembers why the code is
+  shaped as it is): new project at V0; existing codebase in each component's baseline round; after a switch from
+  Mode 1, in the amendment of the first change that crosses an unpinned entry.
+
+**Each change** (this session: orchestrator for decisions, spec and verification; the only writer — except a fresh
+builder when a fix stalls, Standing rules):
+1. Classify: adds a module or seam → phase 4's first three bullets (the draft merges in step 4), then steps 2–7;
+   new/changed entry on existing seams (incl. pinning an entry after a switch from Mode 1) → steps 2–7 with the
+   amendment in step 4; code only → steps 2–7, no semantic amendment. Existing codebase: baseline round first
+   ("Start: existing codebase").
+2. Per module id the change writes: save a one-line `prompts/writer_<id>_r<N>.txt` describing the change (N = next
+   free number for that id); snapshot / commit the modules (reviewers need a diff; skip if no code yet); `touch <work
+   dir>/stamp_<id>_r<N>` (scope-breach check: the change's modules together).
+3. New user-visible behaviour or a new/changed requirement not yet covered by an acceptance test → quote as `REQ-n`;
+   write / rewrite its acceptance test first (never edit one to pass).
 4. Amendment (if any): change protocol steps 2–4. `Affected:` = modules you change (not PROJ or new ones); ACK as each
    module's id.
 5. Code, owner first; tests: contract test per consumer that can't import the owner's codec, failure-injection test
    per new R4 row, class test per fixed class.
 6. Orchestrator duties checklist; fresh module review per semantically changed module (a simplification counts;
-   comment-only → mechanical), seam review per changed seam.
-7. Feature whole → red-team round + quality review (if the project has a bar). `STATUS.md` as in Mode 1.
+   comment-only → mechanical; plus the special-casing check, Terms → "Acceptance tests"), seam review per changed
+   seam. Findings → fixes by class + sweep, then steps 2, 4 (if a fix
+   needs an amendment), 5, 6 again (a new snapshot, so each re-review diff shows the fixes) with fresh reviewers
+   until a full round finds each touched component green; same finding again → fresh builder, then spec change /
+   redesign (Standing rules). Only then the next change or component.
+7. Checkpoints — phase 3's red-team and quality loops (existing codebase: up to the in-scope composite, "Scope"):
+   during a new project's initial build at each green checkpoint, afterwards once a feature is whole. A bug fix
+   alone → the red-team loop only if the bug crossed a seam or hit a failure-model item; a local bug → reviews +
+   class test only; Done after bug fixes alone: bar items as last measured / judged (never judged → one quality
+   round first). The loops run alongside the next change unless it writes a component in the target (then after
+   them); their fixes are steps 2–6, each finished before the next change resumes. `STATUS.md` as in Mode 1. Done =
+   Terms → Done (existing codebase: "Scope").
 
 ## Files
 * `templates/rules.md` — all rules (single source). `templates/INTERFACES.template.md` — spec skeleton.

@@ -2,14 +2,14 @@
 
 **Contract-governed delivery for teams of AI coding agents**
 
-> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield steps, judged-item stances) are
+> **Status:** the latest additions (the user switch, quality loop, work directory, prompt checks, brownfield start and solo (Mode 2) steps, judged-item stances) are
 > validated in simulations only, not yet in a real multi-agent build.
 
 > *Align every contributor — human or AI agent — to a single source of truth, verify every boundary independently,
 > and converge on a defect-free, cross-module-consistent system without human bottlenecks.*
 
-ACGD is an operating model and toolchain for building multi-module software with parallel AI coding agents (or one
-agent over a long engagement). It ships as a [Claude Code](https://claude.com/claude-code) skill: a governance
+ACGD is an operating model and toolchain for building multi-module software with parallel AI coding agents, or with a
+single agent working alone — on a new project or an existing codebase. It ships as a [Claude Code](https://claude.com/claude-code) skill: a governance
 playbook, role-scoped agent briefs, specification templates, and mechanical compliance gates.
 
 ---
@@ -46,7 +46,9 @@ Cross-module defects are **structural**, so ACGD remediates them structurally:
 - **Compliance Gates** — `spec_check.py` (marks, ledger dispositions, acknowledgements, open questions, rule-copy
   integrity, prompt completeness, coverage) and `verify_citations.py` (every `Cite:` points at real code), backed by
   a regression suite.
-- **Brownfield Mode** — the same controls for ongoing work in an existing codebase, including sessions that start
+- **Two modes, two starts** — several writers in parallel (Mode 1) or one solo writer (Mode 2), each on a new
+  project or an existing codebase (brownfield start: register what the code does today, review only what the work
+  touches or calls directly, plus not-yet-conforming code they depend on, unless told otherwise). Every gate runs in both; reviewers stay fresh agents. Includes sessions that start
   with no role assignment.
 
 See [`docs/LIFECYCLE.md`](docs/LIFECYCLE.md) for the delivery lifecycle and [`skill/SKILL.md`](skill/SKILL.md) for the
@@ -64,7 +66,7 @@ written before any code and hidden from builders, and blind audits of anonymised
 | High-severity duplication / inconsistency findings (two independent blind audits) | 6 and 5 | **3 and 2** |
 | Format / ownership disagreements (key-value trial) | ~7 | **~2** |
 | Throughput vs. plain build | baseline | comparable |
-| Token cost | 1× | **≈ 20×** |
+| Token cost | baseline | **much higher** |
 
 **Limitations, stated plainly:** two trials, one run per arm — indicative, not proven. ACGD only prevents drift in
 what it registers (an unregistered convention still drifted). Defects inside a single module need the red team and

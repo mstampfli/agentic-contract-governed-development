@@ -20,8 +20,9 @@ No role line (e.g. a session working directly for the user):
 - Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
   change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
 - Nobody orchestrates for you: any code change, or a change to a registered entry (format, state, call, failure
-  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
-  (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
+  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, "Pick a mode"
+  (writing the code yourself = Mode 2: snapshot first, acceptance test before code for new user-visible behaviour,
+  fresh reviews).
 - Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
   uses the work directory and `prompts/`.
 - Undecidable from spec or code → Orchestrator, "Decisions and the user". (With a role line: No-invention.)
@@ -56,8 +57,11 @@ No role line (e.g. a session working directly for the user):
 - QUESTIONS.md entries: `## Q-<your id>-<n> — <question>` (tagged `[ANSWERED V<k>]`, `V0` if merged into the first
   spec, `[ANSWERED PROJ]` if a `PROJ` file changed; the orchestrator's own: `Q-PROJ-<n>`).
 - Fix the class, not the instance: every instance in your files + a class test `tests_own/test_<your id>_class_*`
-  (class spanning modules: the orchestrator names who writes it). Quality tasks (bar item below target,
-  simplification): no class test — the orchestrator measures; all existing tests still pass (strict-xfail probes of
-  findings just fixed fail by design).
-- Reply: files, questions/assumptions, change requests, the exact test command, line moves that stale others'
-  citations.
+  (class spanning modules: the orchestrator names who writes it). Then sweep: search your files for similar problems
+  (same root cause in another shape, the same mistake elsewhere) and make one general pass over what you changed;
+  each problem found is a class (fix + class test); a similar problem outside your files → list it in your reply; a
+  spec gap → QUESTIONS.md / CHANGE REQUEST. Quality tasks (bar item below target, simplification): sweep findings
+  are listed in your reply, not applied; no class test — the orchestrator measures; all existing tests still pass
+  (strict-xfail probes of findings just fixed fail by design).
+- Reply: files, questions/assumptions, change requests, classes found by the sweep, the exact test command, line
+  moves that stale others' citations.

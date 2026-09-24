@@ -22,12 +22,12 @@ A summary of the operating model. The normative text is [`skill/SKILL.md`](../sk
 | Merge (all / some / one) | `INTERFACES.proposed.md`, reasons in the changelog |
 | User requirements `REQ-n` | verbatim, visible to builders |
 | Operational traces, reference systems | gap candidates |
-| Acceptance tests, quality bar (with hard limits) | hidden tests, measurement scripts |
+| Acceptance tests, quality bar (with hard limits) | hidden tests, measurement scripts (solo: visible, checked for special-casing) |
 | Coverage matrix, scope map, spec-change review | `INTERFACES.md` V0 |
 
 ## Phase 2 — Build loop (per component, dependency-ordered, parallel where independent)
 Writer → mechanical gates (tests, citations, `spec_check all`, scope) → fresh module review → fresh seam reviews →
-class-level fixes → repeat until a **full round** finds the component **green**.
+class-level fixes + a sweep for similar problems → repeat until a **full round** finds the component **green**.
 
 ## Phase 3 — Checkpoint loops
 - **Red team** on the smallest runnable composite, then every larger one; fresh red teamer per round; ends when no new
@@ -37,6 +37,20 @@ class-level fixes → repeat until a **full round** finds the component **green*
 
 ## Phase 4 — Plan / Extend
 Add-ons re-enter Discover; decided coverage cells at touched seams are reopened and re-decided before merge.
+
+## Modes and starting points
+| | New project | Existing codebase |
+|---|---|---|
+| Several writers (Mode 1) | Phases 1 → 2 → 3; Phase 4 per add-on | brownfield start; per add-on: baseline round → Phase 4 |
+| One writer, solo (Mode 2) | Phase 1 → per-change loop | brownfield start → per-change loop |
+
+Brownfield start: a short spec registering today's code (reviewed, merged as V0). Only components the work touches or
+calls directly (plus not-yet-conforming ones they depend on) are in scope unless the user says otherwise; each
+in-scope component that isn't green yet gets a baseline review round before the change is drafted; the rest counts
+as green, and red team / quality stop at the in-scope composite.
+Solo per-change loop: classify → baseline round (brownfield) → snapshot + stamp → acceptance test first → amendment
+(if any) → code, owner first → gates + fresh reviews, fix + sweep until green → red team + quality at each green
+checkpoint of the initial build, later once a feature is whole.
 
 ## Controls that run continuously
 | Control | Mechanism |

@@ -24,7 +24,7 @@ def main():
     root = sys.argv[1]
     win = int(sys.argv[sys.argv.index('--window') + 1]) if '--window' in sys.argv else 3
     cache, total, bad = {}, 0, []
-    skip = {'snapshots', 'prompts', '.git', '__pycache__', 'node_modules', '.venv', 'venv', '.tox', '.mypy_cache', '.pytest_cache'}
+    skip = {'snapshots', 'prompts', '.git', '__pycache__', 'node_modules', '.venv', 'venv', '.tox', '.mypy_cache', '.pytest_cache', 'target'}
     for dp, dns, fs in os.walk(root):
         dns[:] = [d for d in dns if d not in skip and not os.path.isfile(os.path.join(dp, d, 'pyvenv.cfg'))]  # any virtualenv
         for f in fs:

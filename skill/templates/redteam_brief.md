@@ -13,8 +13,9 @@ No role line (e.g. a session working directly for the user):
 - Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
   change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
 - Nobody orchestrates for you: any code change, or a change to a registered entry (format, state, call, failure
-  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
-  (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
+  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, "Pick a mode"
+  (writing the code yourself = Mode 2: snapshot first, acceptance test before code for new user-visible behaviour,
+  fresh reviews).
 - Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
   uses the work directory and `prompts/`.
 - Undecidable from spec or code → Orchestrator, "Decisions and the user". (With a role line: No-invention.)

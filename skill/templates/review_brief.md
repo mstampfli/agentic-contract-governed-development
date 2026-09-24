@@ -13,7 +13,9 @@ Scope for your kind:
   `diff -ru <snapshot dir> <module files>`.] Check every registry entry it owns (exact implementation, owned codecs on
   edge cases) and consumes (calls the owner, relies only on real behaviour), its failure contracts (inject the
   failure), and whether a fix broke anything else (after a simplification: nothing removed was needed by a spec
-  entry, class test or acceptance test).
+  entry, class test or acceptance test). [Solo: the writer wrote the acceptance tests and measurement scripts at
+  <path> — check that no code special-cases them.] [Brownfield: existing code without `Cite:` lines is not a
+  finding.]
 - seam <A-B>: [Re-review: previous findings <list>; diff: `diff -ru <snapshot dir> <files>`.] the code on BOTH sides; run them together; inject failures across the seam; what does each side believe
   afterwards?
 - quality <component or T<n>>: [Re-review: previous findings <list>.] the spec's "User requirements" and "Quality bar" sections, <measurement commands>, <acceptance tests path>,
@@ -35,8 +37,9 @@ No role line (e.g. a session working directly for the user):
 - Role per part of the work: code → Writer / fixer (`<your id>` = module-table id of the module owning each file you
   change); review → Reviewer; breaking the system → Red teamer; running this process → Orchestrator.
 - Nobody orchestrates for you: any code change, or a change to a registered entry (format, state, call, failure
-  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, Mode 2
-  (snapshot first, acceptance test before code for new user-visible behaviour, fresh reviews).
+  contract, helper / constant / convention, user requirement) makes you also the Orchestrator → SKILL.md, "Pick a mode"
+  (writing the code yourself = Mode 2: snapshot first, acceptance test before code for new user-visible behaviour,
+  fresh reviews).
 - Writer limits (stay inside the root, don't read `prompts/`) bind only your writing part; your orchestrator part
   uses the work directory and `prompts/`.
 - Undecidable from spec or code → Orchestrator, "Decisions and the user". (With a role line: No-invention.)
