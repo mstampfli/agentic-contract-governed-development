@@ -188,9 +188,13 @@ helpers, R1 formats, R2 state, R3 calls, R4 failure contracts, coverage, traces,
   under the failure model, nothing two modules could implement differently, no user requirement weakened, no
   violation.
 * **Batch** a round's findings: one amendment, one fix round per module.
-* **Re-read before re-review**: after fixing a review round's findings, re-read the whole spec (not only the edited
-  lines), check each edit in context and grep for restatements of every touched rule; then the fresh re-review
-  (observed: fast targeted patches re-broke other entries, and review rounds stopped converging).
+* **Sweep before every spec review** (rules.md → All roles "Sweep" — the one definition; first review of a draft
+  included): whole passes over the spec — every entry read in full and checked against the code and against the
+  merged spec — each followed by fixes and another whole pass, until a whole pass finds nothing; only then the review
+  (observed: patches checked only in context, then topic-by-topic searches, left 6 and then 2 blocking findings per
+  round for the reviewer). `<skill dir>/lost_clauses.py INTERFACES.md INTERFACES.proposed.md` (merged clauses missing
+  from the draft) and `<skill dir>/topic.py INTERFACES.proposed.md '<regex>'` (every clause on a topic) show where to
+  look, and `<skill dir>/by_identifier.py INTERFACES.proposed.md` lists every group of clauses that name the same identifier in two entries — read every group, not the ones you suspect (observed: topics chosen by the orchestrator missed ten restatements the grouping found); they never replace reading every entry.
 * **Consolidate, don't layer** (interacting amendments in one area → one entry):
   * replaced amendment heading tagged "(superseded by V<k>)" = its mark (`all` skips its marks and ACKs); partly
     replaced → restate its live items in the new amendment (not in `Touches:`), then tag the heading only (the
@@ -268,11 +272,11 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
    * **run the reference system** where it runs locally (install in the work directory or a virtualenv): same
      workload → baseline; same public interface → also the acceptance tests (a test the mature system fails is
      probably wrong — observed: an over-reaching acceptance test);
-   * fill coverage (incl. merge `out:`s) and scope map → spec-change review of the whole file → fix → fresh re-review until
-     no blocking finding → merge as V0
+   * fill coverage (incl. merge `out:`s) and scope map → sweep (rules.md → All roles) → spec-change review of the
+     whole file → fix + sweep → fresh re-review until no blocking finding → merge as V0
      (add-on: next `## V<k>`, reviewed as a spec change).
-2. **Build loop** (a component starts once its dependencies are green; independent ones in parallel): writer →
-   mechanical checks → fresh module review → seam reviews of changed seams → fixes by class → repeat until a full
+2. **Build loop** (a component starts once its dependencies are green; independent ones in parallel): writer (its
+   sweep included) → mechanical checks (incl. its sweep record) → fresh module review → seam reviews of changed seams → fixes by class → repeat until a full
    round finds it green (trivial changes: Reviews → "When").
 3. **Checkpoint loops** (both start at the same checkpoints, in parallel):
    **Red team**:
@@ -312,12 +316,14 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 * Always a **fresh** agent (authors and earlier reviewers are anchored). Re-review: previous routed break / gap /
   violation findings as checklist + real diff (git, or the pre-run snapshot, `diff -ru`); reviews from scratch incl.
   regressions.
-* **Sweep before re-review** (every review kind and red-team round, both modes): after a round's findings the fixer
-  fixes each class, searches its own work for similar problems (same root cause in another shape, the same mistake
-  elsewhere) and makes one general pass over what it changed — then a fresh reviewer. Writer: its own files (rules.md
-  → Writer / fixer); what it lists elsewhere → the orchestrator routes each to its owner as a finding (comments,
-  nits: Standing rules); listed quality items → judged by the next quality round. Orchestrator: the spec ("Re-read
-  before re-review").
+* **Sweep before every review** (every review kind and red-team round, first rounds included, both modes): rules.md →
+  All roles "Sweep" is the one definition — whole passes over the whole scope (never only the diff or what was
+  changed), fix, whole pass again, until a whole pass finds nothing; only then the reviewer. Never sweep → fix →
+  review.
+  Writer: its module files and the entries they own or consume (rules.md → Writer / fixer); orchestrator: the spec,
+  and in Mode 2 its own code (rules.md → Orchestrator). What a writer lists outside its files → the orchestrator
+  routes each to its owner as a finding (comments, nits: Standing rules); listed quality items → judged by the next
+  quality round. A reviewer finding after a sweep = the sweep missed it → root cause in `PROCESS.md`.
 * Output: spec-change / module / seam by class (concern id, all instances, class fix, assumption verdicts); quality per
   bar item + simplifications. First line: what most blocks green / the bar. Formats and probe rules: rules.md.
 * When: module review after every semantic module change — a simplification (deleted or merged code) always counts,
@@ -344,7 +350,9 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
    rules copies (spec, AGENTS.md, `prompts/*.md`), AGENTS.md / symlink. Coverage is informational → run
    `spec_check.py coverage` before declaring green.
 4. Measured bar items whose components exist.
-5. Read the ledgers.
+5. Read the ledgers and the writer's sweep record: every file of its modules and every entry they own or consume read
+   in full, the last whole pass empty (rules.md → All roles "Sweep"); missing or partial → the run is not done, send
+   it back.
 6. Scope: `find <root> -type f -newer <work dir>/stamp_<id>_r<N>` (+ `git status` for deletions) → only its files,
    its `tests_own/`, ledger appends (entries headed with its id, ACK lines). Ignore tool caches, virtualenvs, process
    and PROJ files changed by you / reviewers / red teamers, files of writers running concurrently.
@@ -355,6 +363,8 @@ skill directory (`<skill dir>`, e.g. `~/.claude/skills/acgd`).
 * Findings to owners by class; first fix → same writer (SendMessage, saved `.txt`); same break / gap / violation again
   → fresh builder.
   A consumer that can't import an owner's code → the owner gets a task: publish golden data (Writer / fixer).
+* A sweep is never cut short for cost or time, and scripts never stand in for reading (rules.md → All roles
+  "Sweep").
 * No round cap; steer by convergence. Correctness failures are never accepted: stalls escalate (fresh builder → spec
   change / redesign).
 * Nothing others depend on stays a "known issue"; only local non-correctness items (never a violation or a comment),
@@ -392,8 +402,8 @@ is valid; each scope addition adds its items, in that component's baseline amend
 `PROCESS.md`, `STATUS.md`, `concerns.md` copy, work directory, `prompts/`, `tests_own/`, `tests_review/`,
 `snapshots/`, PROJ test config; `AGENTS.md` + `CLAUDE.md` symlink with `<project>`, `<skill dir>` (absolute) filled
 (`all` flags unfilled ones). Later phase 1 runs skip phase 1's setup step.
-* Draft in `INTERFACES.proposed.md` → spec-change review → fixes → fresh re-review until no blocking finding → merge
-  as V0 (no counter-specs: the code is the source).
+* Draft in `INTERFACES.proposed.md` → sweep (rules.md → All roles) → spec-change review → fixes + sweep → fresh
+  re-review until no blocking finding → merge as V0 (no counter-specs: the code is the source).
 * Behaviour wrong under the failure model → register the correct rule, not the bug; its owner stays listed in
   `STATUS.md` as "not yet conforming" until a baseline round fixes it.
 * `REQ-n`: the user's stated requirements for the system and the work at hand (none → none); acceptance tests per
@@ -429,7 +439,8 @@ not-yet-conforming component they depend on; each later change adds its own. The
   the code; the rest go to the first fix run (a run of their own if nothing else needs fixing). The change's own new
   acceptance tests don't count for baseline green.
 * How: snapshot `snapshots/<component>-<id>-r0/` (diff base); mechanical checks = "After every writer run" 1–5 with
-  the project's own test command; fresh module + seam reviews → fixes by class + sweep → repeat until green. Fixes
+  the project's own test command; sweep (rules.md → All roles; Mode 1: a fresh builder's first run) → fresh module
+  + seam reviews → fixes by class + sweep → repeat until green. Fixes
   are normal writer runs (next free r<N>, prompt, snapshot, stamp, duties): Mode 1 → a fresh builder first, then
   Standing rules; Mode 2 → this session (prompt as in "Each change" step 2).
 
@@ -457,7 +468,9 @@ builder when a fix stalls, Standing rules):
    write / rewrite its acceptance test first (never edit one to pass).
 4. Amendment (if any): change protocol steps 2–4. `Affected:` = modules you change (not PROJ or new ones); ACK as each
    module's id.
-5. Code, owner first; tests: the required tests (rules.md → All roles "Violation").
+5. Code, owner first; tests: the required tests (rules.md → All roles "Violation"); then the sweep (rules.md →
+   Orchestrator "Sweep"): every file of every module the change touches, calls or is called by, plus the whole
+   spec — whole passes until one finds nothing.
 6. Orchestrator duties checklist; fresh module review per semantically changed module (a simplification counts;
    trivial → mechanical; plus the special-casing check, Terms → "Acceptance tests"), seam review per changed
    seam. Findings → fixes by class + sweep, then steps 2, 4 (if a fix needs an amendment), 5, 6 again (a new
@@ -484,5 +497,6 @@ builder when a fix stalls, Standing rules):
 * `tests/test_scripts.py` — one regression test per real finding, correct and broken input each. Run `python3 -m
   pytest -q <skill dir>/tests` after every script change; add a test per new case (observed: three straight rounds
   shipped a script regression).
+* `lost_clauses.py OLD NEW`, `topic.py SPEC REGEX…`, `by_identifier.py SPEC` (every clause grouped by each identifier it names, groups spanning two entries — read every one for a rule stated twice) — sweep aids (where to read), never the sweep itself.
 * `verify_citations.py` — every `Cite:` points at a real file:line containing the snippet (proves the writer looked,
   not that the code is right); skips `snapshots/`, `prompts/`, virtualenvs, root ledgers, `PROCESS.md`, `STATUS.md`.

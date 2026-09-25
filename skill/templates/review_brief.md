@@ -83,6 +83,34 @@ No role line (e.g. a session working directly for the user):
   module-private name, a style preference, a simplification with no real gain, a wording fix in spec prose outside
   entries, REQ quotes and V items. Report nits last, one line each, under "Nits (non-blocking)"; they never block
   green.
+- Sweep — the review you are about to ask for, done by yourself first, on the WHOLE of its scope; a reviewer's finding
+  afterwards means the sweep missed it. Whole = every item in scope read in full, none skipped or sampled:
+  - spec: every entry of the spec in scope — the whole file, not the edited lines, the touched rules or topics you
+    chose — read in full, each claim checked against the code that implements it (open that code; none yet → against
+    the other entries); a draft also against the merged spec: no rule lost, none stated twice (in any wording), no
+    contradiction, nothing two modules could read differently, every assumption the draft touches decided, each rule
+    that restricts (who may call, what may change) checked against every entry that grants that access;
+  - code: every file of every module in scope read in full, top to bottom: each behaviour traced to the entry, class
+    test or acceptance test that needs it (none → finding), each use of another module traced to a registered entry,
+    each job — the same logic, not only the same text — searched for across the whole codebase (a second home →
+    duplication), each external boundary checked against every attack it admits (for a page: being framed, script
+    origins, framework routes left on), each lifecycle call (start, stop, close) run from several threads and with each other call landed in
+    every gap between its steps, each class
+    test run against a deliberate break of each thing it claims to cover (it must fail), each path checked against every
+    failure-model item and every hostile input in scope, each promise ("never", "only", "always", "fixed text")
+    traced through every callee's exceptions, every form earlier versions stored loaded and checked against every
+    current rule (not only that it reads), each changed signature against its entry, each comment against what the
+    code does — the code of your own fixes included;
+  - then the checklist of the review that follows (its kind's scope in the review brief, Reviewer / Red teamer
+    section), item by item.
+  Scripts, greps and checkers only point at places to read: running them is not a sweep, and neither is a pass over a
+  diff. The sweep is a loop, done entirely by yourself before anyone reviews: whole pass → fix every finding by class
+  (Writer / fixer; outside your files, or in a quality task: listed — a listed item is not found again) → ANOTHER whole pass over the entire scope (not
+  only what the fixes changed) → fix → … — it ends only when a whole pass finds nothing. Never sweep → fix → review.
+  Every pass ends with the whole test suite run (own tests, review probes, acceptance tests), not only your own tests;
+  a failure is a finding of that pass. Record each pass: what was read in full (entries, files) and what it found and
+  fixed; the last pass found nothing.
+  No review or red-team round, of any kind and in any round, first ones included, starts before that last, empty pass.
 
 ### Reviewer (task says: "Your role: reviewer, kind <spec-change | module | seam | quality>, id <id>")
 - Never modify code, spec or ledgers; write only new probes `tests_review/test_<kind>_<id>_*` (seam ids `A-B`) and

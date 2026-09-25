@@ -65,6 +65,34 @@ No role line (e.g. a session working directly for the user):
   module-private name, a style preference, a simplification with no real gain, a wording fix in spec prose outside
   entries, REQ quotes and V items. Report nits last, one line each, under "Nits (non-blocking)"; they never block
   green.
+- Sweep — the review you are about to ask for, done by yourself first, on the WHOLE of its scope; a reviewer's finding
+  afterwards means the sweep missed it. Whole = every item in scope read in full, none skipped or sampled:
+  - spec: every entry of the spec in scope — the whole file, not the edited lines, the touched rules or topics you
+    chose — read in full, each claim checked against the code that implements it (open that code; none yet → against
+    the other entries); a draft also against the merged spec: no rule lost, none stated twice (in any wording), no
+    contradiction, nothing two modules could read differently, every assumption the draft touches decided, each rule
+    that restricts (who may call, what may change) checked against every entry that grants that access;
+  - code: every file of every module in scope read in full, top to bottom: each behaviour traced to the entry, class
+    test or acceptance test that needs it (none → finding), each use of another module traced to a registered entry,
+    each job — the same logic, not only the same text — searched for across the whole codebase (a second home →
+    duplication), each external boundary checked against every attack it admits (for a page: being framed, script
+    origins, framework routes left on), each lifecycle call (start, stop, close) run from several threads and with each other call landed in
+    every gap between its steps, each class
+    test run against a deliberate break of each thing it claims to cover (it must fail), each path checked against every
+    failure-model item and every hostile input in scope, each promise ("never", "only", "always", "fixed text")
+    traced through every callee's exceptions, every form earlier versions stored loaded and checked against every
+    current rule (not only that it reads), each changed signature against its entry, each comment against what the
+    code does — the code of your own fixes included;
+  - then the checklist of the review that follows (its kind's scope in the review brief, Reviewer / Red teamer
+    section), item by item.
+  Scripts, greps and checkers only point at places to read: running them is not a sweep, and neither is a pass over a
+  diff. The sweep is a loop, done entirely by yourself before anyone reviews: whole pass → fix every finding by class
+  (Writer / fixer; outside your files, or in a quality task: listed — a listed item is not found again) → ANOTHER whole pass over the entire scope (not
+  only what the fixes changed) → fix → … — it ends only when a whole pass finds nothing. Never sweep → fix → review.
+  Every pass ends with the whole test suite run (own tests, review probes, acceptance tests), not only your own tests;
+  a failure is a finding of that pass. Record each pass: what was read in full (entries, files) and what it found and
+  fixed; the last pass found nothing.
+  No review or red-team round, of any kind and in any round, first ones included, starts before that last, empty pass.
 
 ### Writer / fixer (task says: "Your role: writer <id>")
 - Owner rule: only the owner of FMT-n encodes/decodes it; only the writer of EFF-n mutates it. Call the owner's
@@ -93,15 +121,15 @@ No role line (e.g. a session working directly for the user):
 - QUESTIONS.md entries: `## Q-<your id>-<n> — <question>` (tagged `[ANSWERED V<k>]`, `V0` if merged into the first
   spec, `[ANSWERED PROJ]` if a `PROJ` file changed; the orchestrator's own: `Q-PROJ-<n>`).
 - Fix the class, not the instance: every instance in your files + a class test `tests_own/test_<your id>_class_*`
-  where the required tests ask for one (class spanning modules: the orchestrator names who writes it). Then sweep:
-  search your files for similar problems (same root cause in another shape, the same mistake elsewhere) and make one
-  general pass over what you changed; a class found → fix it the same way; a comment → fix it; a nit → fix or list it;
-  a similar problem outside your files → list it in your reply; a spec gap → QUESTIONS.md / CHANGE REQUEST. Quality
+  where the required tests ask for one (class spanning modules: the orchestrator names who writes it). Then sweep
+  (All roles "Sweep"; scope: every file of your modules and every spec entry they own or consume — not only what you
+  changed): a class found → fix it the same way; a comment → fix it; a nit → fix or list it; a problem outside your
+  files → list it in your reply; a spec gap → QUESTIONS.md / CHANGE REQUEST. Quality
   tasks (bar item below target, simplification): sweep findings are listed in your reply, not applied; no class test —
   the orchestrator measures; all existing tests still pass (strict-xfail probes of findings just fixed fail by
   design).
-- Reply: files, questions/assumptions, change requests, classes and nits found by the sweep (quality task: comments
-  too), stand-ins, disputed findings (why), the exact test command, line moves that stale others' citations.
+- Reply: files, questions/assumptions, change requests, the sweep record (files and entries read in full; classes,
+  comments and nits found — quality task: listed, not applied), stand-ins, disputed findings (why), the exact test command, line moves that stale others' citations.
 
 ### Reviewer (task says: "Your role: reviewer, kind <spec-change | module | seam | quality>, id <id>")
 - Never modify code, spec or ledgers; write only new probes `tests_review/test_<kind>_<id>_*` (seam ids `A-B`) and
@@ -176,6 +204,10 @@ No role line (e.g. a session working directly for the user):
     requirement, a bar item beyond its hard limit → fresh builder, then spec change or redesign.
 - Writing code yourself (e.g. solo, Mode 2) → follow Writer / fixer for it; your own tests never verify your change;
   reviews stay fresh agents.
+- Sweep (All roles) before spawning any reviewer or red teamer, first rounds included: a spec or draft → the whole
+  spec, every entry, plus the code implementing it; code you wrote (Mode 2) → every file of every module the change
+  touches, calls or is called by, plus the whole spec; after a writer's run → its sweep record covers every file of its
+  modules and ends with a whole pass that found nothing (else the run is not done). Record it in STATUS.md; a reviewer finding it missed → root cause in PROCESS.md.
 - When a loop ends and what never starts a round: SKILL.md → Standing rules.
 - Spawn every agent with its role line + brief; run all mechanical checks yourself after every writer run; never
   trust self-reports.

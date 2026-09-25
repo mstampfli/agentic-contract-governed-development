@@ -277,3 +277,33 @@ def test_marks_adds_checked(tmp_path):  # r18: Adds: entries were never checked
     assert 'HLP-4: listed under Adds: but not defined' in out
     w(tmp_path, 'S.md', '# s\n**FMT-9** y\n## V1 a\nAdds: FMT-9.\n')
     assert '(added by V1)' in run(tmp_path, 'marks', 'S.md')[1]
+
+
+def _load(name):
+    import importlib.util
+    spec = importlib.util.spec_from_file_location(name, os.path.join(os.path.dirname(__file__), '..', name + '.py'))
+    mod = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(mod)
+    return mod
+
+
+V0 = "# INTERFACES\n## Failure model\n| a | b |\n## R3 Cross-module calls\n- **CALL-1** `f()` — the snapshot is taken every ten ticks; errors raise ValueError.\n## Changelog\n- V0\n"
+
+
+def test_lost_clauses_on_a_v0_spec_and_a_moved_rule():  # crashed without a "## V1" section
+    lc = _load('lost_clauses')
+    new = V0.replace("the snapshot is taken every ten ticks; ", "") + "## V1 x\n"
+    assert lc.lost(V0, V0) == []
+    assert lc.lost(V0, new) == ["the snapshot is taken every ten ticks"]
+
+
+def test_topic_on_a_v0_spec_labels_the_entry():
+    tp = _load('topic')
+    assert tp.topic(V0, ["snapshot"]) == ["[CALL-1] - **CALL-1** `f()` — the snapshot is taken every ten ticks"]
+
+
+def test_by_identifier_groups_a_rule_stated_in_two_entries():
+    bi = _load('by_identifier')
+    spec = V0.replace("## Changelog", "- **CALL-2** `g()` — when `f` fails it retries; errors raise ValueError.\n## Changelog")
+    g = bi.groups(spec)
+    assert set(g) == {"f"} and {e for e, _ in g["f"]} == {"CALL-1", "CALL-2"}
